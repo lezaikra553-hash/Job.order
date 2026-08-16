@@ -59,13 +59,13 @@ main{max-width:1250px;margin:auto;padding:20px}.toolbar{display:flex;gap:8px;fle
 const STAGES=['Film','Cutting / CNC / Laser','Bending','Welding / Assembly','Painting','Finishing','Packing','Pemasangan'];
 const KEY='mulia_jo_v9_demo';
 let db={version:9,jos:[]};
-let currentUser=localStorage.getItem('mulia_pic')||'Andre';
+let currentUser=localStorage.getItem('mulia_pic')||'';
 
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function fmt(s){if(!s)return '-';const d=new Date(s+'T00:00:00');return isNaN(d)?s:d.toLocaleDateString('id-ID',{day:'2-digit',month:'2-digit',year:'numeric'})}
 function uid(p='id'){return p+'_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,7)}
 function save(){localStorage.setItem(KEY,JSON.stringify(db))}
-function load(){try{const x=JSON.parse(localStorage.getItem(KEY)||'null');if(x?.jos)db=x}catch(e){};db.jos=db.jos||[];document.getElementById('userBadge').textContent='PIC: '+currentUser;save()}
+function load(){try{const x=JSON.parse(localStorage.getItem(KEY)||'null');if(x?.jos)db=x}catch(e){};db.jos=db.jos||[];document.getElementById('userBadge').textContent='PIC: '+(currentUser||'Belum dipilih');save()}
 function changeCurrentPIC(){
  const name=prompt('Nama PIC Produksi untuk tampilan dashboard:',currentUser||'');
  if(name===null)return;
@@ -73,10 +73,10 @@ function changeCurrentPIC(){
  if(!clean)return;
  currentUser=clean;
  localStorage.setItem('mulia_pic',currentUser);
- document.getElementById('userBadge').textContent='PIC: '+currentUser;
+ document.getElementById('userBadge').textContent='PIC: '+(currentUser||'Belum dipilih');
  render();
 }
-function myJO(j){return j.pic===currentUser}
+function myJO(j){return !!currentUser && j.pic===currentUser}
 function pct(j){const a=j.items||[];if(!a.length)return 0;let n=0,t=a.length*STAGES.length;a.forEach(x=>{const p=x.progress||[];n+=STAGES.filter(s=>p.find(z=>z.stage===s&&z.done)).length});return Math.round(n/t*100)}
 function state(j){const p=pct(j);return p>=100?'done':p>0?'progress':'open'}
 function render(){
@@ -85,7 +85,7 @@ function render(){
  document.getElementById('rows').innerHTML=all.length?all.map(j=>{const p=pct(j);return `<tr>
  <td><b>${esc(j.joNo)}</b><br><span class="pill">${esc(j.items?.length||0)} item</span></td>
  <td><b>${esc(j.invoiceNo||'-')}</b><br>${esc(j.customer||'-')}</td>
- <td>${esc(j.pic||'-')}</td>
+ <td>${esc(j.pic||'Belum ditentukan')}</td>
  <td><div class="progress"><i style="width:${p}%"></i></div><small>${p}%</small></td>
  <td>${esc(fmt(j.targetDate))}</td>
  <td><button class="btn" onclick="openJO('${j.id}')">Buka</button> <button class="btn secondary" onclick="printJO('${j.id}')">🖨</button></td>
@@ -99,18 +99,18 @@ function render(){
  sel.innerHTML='<option value="">Semua PIC</option>'+pics.map(n=>`<option>${esc(n)}</option>`).join('');
  if(pics.includes(old)) sel.value=old;
 }
-function show(content){document.getElementById('modalBox').innerHTML=content;document.getElementById('modal').classList.add('show')}
+function show(content){const box=document.getElementById('modalBox');box.dataset.errorShown='';box.innerHTML=content;document.getElementById('modal').classList.add('show')}
 function closeModal(){document.getElementById('modal').classList.remove('show')}
 function newJO(){
- const j={id:uid('jo'),joNo:'JO-'+new Date().getFullYear()+'-'+String(db.jos.length+1).padStart(4,'0'),invoiceNo:'',customer:'',invoiceDate:'',productionDate:new Date().toISOString().slice(0,10),targetDate:'',pic:currentUser,items:[newItem()],generalNote:'',createdAt:new Date().toISOString()};
+ const j={id:uid('jo'),joNo:'JO-'+new Date().getFullYear()+'-'+String(db.jos.length+1).padStart(4,'0'),invoiceNo:'',customer:'',invoiceDate:'',productionDate:new Date().toISOString().slice(0,10),targetDate:'',pic:'',items:[newItem()],generalNote:'',createdAt:new Date().toISOString()};
  show(editor(j,false))
 }
 function newItem(){return {id:uid('item'),name:'',qty:'',unit:'Pcs',size:'',material:'',thickness:'',finishing:'',construction:'',accessory:'',spec:'',files:[],progress:STAGES.map(stage=>({stage,done:false,updatedAt:'',note:'',photos:[]}))}}
 function editor(j,editing){
  show(`<div class="modalhead"><h2>${editing?'Edit':'JO Baru'} — ${esc(j.joNo)}</h2><button class="btn secondary" onclick="closeModal()">✕</button></div>
  <div class="grid3">
-  <div class="field"><label>No. Invoice</label><input id="e_inv" value="${esc(j.invoiceNo)}"></div>
-  <div class="field"><label>Customer</label><input id="e_cus" value="${esc(j.customer)}"></div>
+  <div class="field"><label>No. Invoice</label><input id="e_inv" value="${esc(j.invoiceNo||'Belum ada')}"></div>
+  <div class="field"><label>Customer</label><input id="e_cus" value="${esc(j.customer||'Belum diisi')}"></div>
   <div class="field"><label>Tanggal Invoice</label><input id="e_date" type="date" value="${esc(j.invoiceDate)}"></div>
   <div class="field"><label>Tanggal Masuk Produksi</label><input id="e_in" type="date" value="${esc(j.productionDate)}"></div>
   <div class="field"><label>Target Selesai</label><input id="e_target" type="date" value="${esc(j.targetDate)}"></div>
@@ -153,7 +153,7 @@ function saveEditor(id,editing){
 }
 function openJO(id){
  const j=db.jos.find(x=>x.id===id);if(!j)return;
- show(`<div class="modalhead"><div><h2 style="margin:0">${esc(j.joNo)}</h2><div class="muted">${esc(j.customer)} • PIC ${esc(j.pic)}</div></div><button class="btn secondary" onclick="closeModal()">✕</button></div>
+ show(`<div class="modalhead"><div><h2 style="margin:0">${esc(j.joNo)}</h2><div class="muted">${esc(j.customer||'Belum diisi')} • PIC ${esc(j.pic||'Belum ditentukan')}</div></div><button class="btn secondary" onclick="closeModal()">✕</button></div>
  <div class="grid3"><div><b>Invoice</b><br>${esc(j.invoiceNo||'-')}</div><div><b>Target</b><br>${esc(fmt(j.targetDate))}</div><div><b>Progress</b><br>${pct(j)}%</div></div>
  <div class="section-title">Progress Pekerjaan</div>
  ${j.items.map((x,i)=>progressItem(j,i,x)).join('')}
@@ -186,9 +186,15 @@ function openImport(){show(`<div class="modalhead"><h2>Upload Invoice</h2><butto
  <p class="muted">Untuk versi online, parser invoice akan membaca PDF/scan dan mengisi No. Invoice, Customer, Tanggal, Detail, Qty & Satuan. Nominal tidak masuk JO.</p>
  <input id="invoiceFile" type="file" accept=".pdf,image/*" onchange="invoiceDemo(event)">
  <div id="invoiceResult" style="margin-top:12px"></div>`)}
+function createJOFromInvoice(){
+ const j={id:uid('jo'),joNo:'JO-'+new Date().getFullYear()+'-'+String(db.jos.length+1).padStart(4,'0'),
+ invoiceNo:'',customer:'',invoiceDate:'',productionDate:new Date().toISOString().slice(0,10),
+ targetDate:'',pic:'',items:[newItem()],generalNote:'',createdAt:new Date().toISOString()};
+ closeModal(); setTimeout(()=>editor(j,false),50);
+}
 async function invoiceDemo(e){
  const f=e.target.files[0];if(!f)return;
- document.getElementById('invoiceResult').innerHTML='<div class="card">File diterima: '+esc(f.name)+'<br><small>Parser OCR siap dihubungkan ke endpoint /api/drive. Untuk keamanan, nominal tidak disimpan.</small><br><br><button class="btn" onclick="newJO()">Buat JO dari Invoice</button></div>';
+ document.getElementById('invoiceResult').innerHTML='<div class="card">File diterima: '+esc(f.name)+'<br><small>File invoice sudah diterima. Data invoice akan dimasukkan ke JO tanpa nominal.</small><br><br><button class="btn" onclick="createJOFromInvoice()">Buat JO dari Invoice</button></div>';
 }
 function exportJSON(){const blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='mulia-jo-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
 function importJSON(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const x=JSON.parse(r.result);if(!x.jos)throw Error('Format JSON tidak sesuai');db=x;save();render();alert('Backup JSON berhasil dimuat.')}catch(err){alert('JSON tidak valid: '+err.message)}};r.readAsText(f)}
@@ -205,11 +211,23 @@ function printJO(id){
  const w=window.open('','_blank','width=900,height=800');if(!w){alert('Izinkan pop-up browser.');return}
  const items=j.items||[];
  let h=`<!doctype html><html><head><meta charset="utf-8"><title>${esc(j.joNo)}</title><style>@page{size:A4;margin:7mm}body{font:9px Arial;color:#111}.head{border-bottom:2px solid #111;padding-bottom:5px}.top{display:flex;justify-content:space-between}.meta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-top:6px}.items{display:grid;grid-template-columns:${items.length>1?'1fr 1fr':'1fr'};gap:5px;margin-top:6px}.item{border:1px solid #888;padding:5px;break-inside:avoid}.grid{display:grid;grid-template-columns:1fr 1fr;gap:2px 8px}.gallery{display:flex;gap:4px;flex-wrap:wrap}.gallery img{width:32mm;height:23mm;object-fit:contain;border:1px solid #aaa}.sign{display:flex;gap:50mm;text-align:center;margin-top:15px}</style></head><body>
- <div class="head"><div class="top"><h1>JOB ORDER PRODUKSI</h1><b>${esc(j.joNo)}</b></div><div class="meta"><div><b>Invoice:</b> ${esc(j.invoiceNo)}</div><div><b>Customer:</b> ${esc(j.customer)}</div><div><b>Tanggal:</b> ${esc(fmt(j.invoiceDate))}</div><div><b>Masuk:</b> ${esc(fmt(j.productionDate))}</div><div><b>Target:</b> ${esc(fmt(j.targetDate))}</div><div><b>PIC:</b> ${esc(j.pic)}</div></div></div><h3>DETAIL PRODUKSI</h3><div class="items">`;
+ <div class="head"><div class="top"><h1>JOB ORDER PRODUKSI</h1><b>${esc(j.joNo)}</b></div><div class="meta"><div><b>Invoice:</b> ${esc(j.invoiceNo||'Belum ada')}</div><div><b>Customer:</b> ${esc(j.customer||'Belum diisi')}</div><div><b>Tanggal:</b> ${esc(fmt(j.invoiceDate))}</div><div><b>Masuk:</b> ${esc(fmt(j.productionDate))}</div><div><b>Target:</b> ${esc(fmt(j.targetDate))}</div><div><b>PIC:</b> ${esc(j.pic||'Belum ditentukan')}</div></div></div><h3>DETAIL PRODUKSI</h3><div class="items">`;
  items.forEach((x,i)=>{h+=`<div class="item"><b>${i+1}. ${esc(x.name)}</b> — ${esc(x.qty)} ${esc(x.unit)}<div class="grid"><div><b>Ukuran:</b> ${esc(x.size||'-')}</div><div><b>Bahan:</b> ${esc(x.material||'-')}</div><div><b>Tebal:</b> ${esc(x.thickness||'-')}</div><div><b>Finishing:</b> ${esc(x.finishing||'-')}</div><div><b>Konstruksi:</b> ${esc(x.construction||'-')}</div><div><b>Aksesoris:</b> ${esc(x.accessory||'-')}</div></div>${x.spec?`<p><b>Instruksi:</b> ${esc(x.spec)}</p>`:''}<div class="gallery">${(x.files||[]).filter(f=>f.type?.startsWith('image/')).map(f=>`<img src="${f.data}">`).join('')}</div></div>`});
  h+=`</div>${j.generalNote?`<p><b>Catatan:</b> ${esc(j.generalNote)}</p>`:''}<div class="sign"><div>Mengetahui<br><br>________________</div><div>Produksi<br><br>________________</div></div></body></html>`;
  w.document.write(h);w.document.close();w.onload=()=>setTimeout(()=>w.print(),500);
 }
 load();render();
+window.addEventListener('error',e=>{
+ const msg=e?.error?.message||e?.message||'Terjadi kesalahan JavaScript';
+ console.error(e);
+ const box=document.getElementById('modalBox');
+ if(box && document.getElementById('modal')?.classList.contains('show') && !box.dataset.errorShown){
+   box.dataset.errorShown='1';
+   const note=document.createElement('div');
+   note.style='margin-top:12px;padding:10px;background:#fee2e2;color:#991b1b;border-radius:8px;font-size:12px';
+   note.textContent='Terjadi kesalahan: '+msg;
+   box.appendChild(note);
+ }
+});
 </script>
 </body></html>
