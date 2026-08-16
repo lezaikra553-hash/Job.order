@@ -19,12 +19,30 @@ label{font-size:13px;font-weight:700;display:block;margin-bottom:6px}.muted{colo
 .drop input{display:none}.drop label{display:block;cursor:pointer}.drop strong{display:block;font-size:18px;margin-bottom:7px}
 .badge{display:inline-block;padding:5px 9px;border-radius:20px;background:#eef2f7;font-size:12px;font-weight:700}
 .item{border:1px solid #dfe4ec;border-radius:10px;padding:15px;margin-top:12px}.itemhead{display:flex;justify-content:space-between;gap:10px;align-items:center}
-.preview{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}.preview figure{margin:0;width:150px;border:1px solid #ddd;border-radius:8px;overflow:hidden;background:#fafafa}.preview img{width:150px;height:105px;object-fit:cover}.preview figcaption{font-size:11px;padding:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.preview{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}.preview figure{margin:0;width:150px;border:1px solid #ddd;border-radius:8px;overflow:hidden;background:#fafafa}.preview img{width:150px;height:105px;object-fit:cover}.preview figcaption{font-size:11px;padding:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.progressBox{margin-top:14px;padding:14px;border:1px solid #d9e0ea;border-radius:10px;background:#f8fafc}.progressHead{display:flex;justify-content:space-between;align-items:center;gap:10px}.progressBadge{display:inline-block;min-width:52px;text-align:center;padding:5px 9px;border-radius:20px;background:#172033;color:#fff;font-size:12px;font-weight:700}.cameraBtn{display:inline-flex;align-items:center;gap:6px;border-radius:8px;padding:11px 15px;cursor:pointer;font-weight:600;background:#172033;color:#fff}.cameraBtn input{display:none}.progressPreview figure{position:relative}.progressPreview .removePhoto{position:absolute;top:4px;right:4px;border:0;border-radius:50%;width:25px;height:25px;padding:0;background:#b42318;color:#fff;cursor:pointer}
 table{width:100%;border-collapse:collapse}th,td{padding:11px;border-bottom:1px solid #e8ebf0;text-align:left;font-size:13px}th{background:#f8fafc}
 .hidden{display:none!important}.actions{display:flex;gap:8px;flex-wrap:wrap}.search{max-width:320px}.notice{padding:12px;border-radius:8px;background:#f7f8fa;border:1px solid #e3e7ed;font-size:13px}
 .printPage{display:none}
 @media(max-width:700px){.grid,.grid3{grid-template-columns:1fr}}
 @media print{body{background:#fff}.noPrint{display:none!important}.printPage{display:block}.container{display:none}}
+
+/* ===== MODE PRODUKSI ===== */
+.production-only{display:none!important}
+body.prod-mode .admin-only{display:none!important}
+body.prod-mode .production-only{display:block!important}
+body.prod-mode .container{max-width:900px}
+body.prod-mode #dashboard .grid3{grid-template-columns:repeat(3,1fr)}
+body.prod-mode #import{display:none!important}
+.prodHeader{background:linear-gradient(135deg,#0f172a,#164e63);color:#fff;border-radius:14px;padding:18px;margin-bottom:14px}
+.prodHeader h2{margin:0 0 5px}.prodHeader p{margin:0;opacity:.85;font-size:13px}
+.prodJob{border:1px solid #dbe3ea;border-radius:14px;padding:14px;margin:10px 0;background:#fff;box-shadow:0 3px 12px rgba(0,0,0,.05)}
+.prodJobHead{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.prodJobHead h3{margin:0 0 4px}
+.prodMeta{font-size:12px;color:#64748b}.prodAction{margin-top:12px;width:100%}
+.prodEditor{display:none;margin-top:12px;border-top:1px solid #e5e7eb;padding-top:12px}.prodEditor.open{display:block}
+.prodGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.prodGrid .full{grid-column:1/-1}
+.prodSave{width:100%;padding:13px;border:0;border-radius:10px;background:#0f766e;color:white;font-weight:700;cursor:pointer}
+.prodTimeline{margin-top:10px}.prodTimelineCard{border-left:3px solid #0f766e;padding:8px 10px;margin:8px 0;background:#f8fafc;border-radius:0 8px 8px 0}.prodTimelinePhotos{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}.prodTimelinePhotos img{width:76px;height:58px;object-fit:cover;border-radius:6px;border:1px solid #ddd}
+@media(max-width:700px){.prodGrid{grid-template-columns:1fr}.prodJobHead{flex-direction:column}body.prod-mode #dashboard .grid3{grid-template-columns:1fr 1fr 1fr}}
 </style>
 </head>
 <body>
@@ -35,10 +53,10 @@ table{width:100%;border-collapse:collapse}th,td{padding:11px;border-bottom:1px s
 
 <div class="container noPrint">
 <div class="toolbar">
-<button onclick="show('dashboard')">Dashboard JO</button>
-<button onclick="startImport()">+ Upload Invoice</button>
-<button class="secondary" onclick="backup()">Backup</button>
-<label class="secondary" style="padding:11px 15px;border-radius:8px;cursor:pointer">Import Backup
+<button class="admin-only" onclick="show('dashboard')">Dashboard JO</button>
+<button class="admin-only" onclick="startImport()">+ Upload Invoice</button>
+<button class="admin-only secondary" onclick="backup()">Backup</button>
+<label class="admin-only secondary" style="padding:11px 15px;border-radius:8px;cursor:pointer">Import Backup
 <input type="file" accept=".json" onchange="restore(event)" style="display:none">
 </label>
 </div>
@@ -98,6 +116,10 @@ table{width:100%;border-collapse:collapse}th,td{padding:11px;border-bottom:1px s
 </section>
 </div>
 
+<section id="production" class="production-only">
+<div class="prodHeader"><h2>👷 Progress Produksi</h2><p>Pilih JO, isi PIC secara manual, update status/progress, lalu ambil atau upload beberapa foto.</p></div>
+<div class="card"><div class="toolbar" style="justify-content:space-between"><h2>JO Aktif</h2><input class="search" id="prodSearch" placeholder="Cari JO / customer / pekerjaan" oninput="renderProduction()"></div><div id="prodJobs"></div></div>
+</section>
 <div id="printArea" class="printPage"></div>
 
 <script>
@@ -454,24 +476,101 @@ function normalizeUnit(s){
 }
 
 function addItem(data={}){
- const b=document.createElement('div');b.className='item';
- b.innerHTML=`<div class="itemhead"><h3>Item</h3><button class="danger" onclick="this.closest('.item').remove()">Hapus</button></div>
- <div class="grid3" style="margin-top:12px">
- <div><label>Nama Pekerjaan / Produk</label><input class="i-name" value="${esc(data.name||'')}"></div>
- <div><label>Qty</label><input class="i-qty" type="number" min="0" value="${esc(data.qty||'')}"></div>
- <div><label>Satuan</label><input class="i-unit" value="${esc(data.unit||'Unit')}"></div></div>
- <div class="grid3" style="margin-top:12px">
- <div><label>Ukuran</label><input class="i-size" value="${esc(data.size||'')}"></div>
- <div><label>Material / Bahan</label><input class="i-material" value="${esc(data.material||'')}"></div>
- <div><label>Ketebalan</label><input class="i-thickness" value="${esc(data.thickness||'')}"></div></div>
- <div class="grid3" style="margin-top:12px">
- <div><label>Finishing</label><input class="i-finishing" value="${esc(data.finishing||'')}"></div>
- <div><label>Konstruksi</label><input class="i-construction" value="${esc(data.construction||'')}"></div>
- <div><label>Aksesoris / Bracket</label><input class="i-accessory" value="${esc(data.accessory||'')}"></div></div>
- <div style="margin-top:12px"><label>Spesifikasi / Instruksi Produksi</label><textarea class="i-spec">${esc(data.spec||'')}</textarea></div>
- <div style="margin-top:12px"><label>Gambar Kerja / Referensi</label><input class="i-files" type="file" accept="image/*,.pdf" multiple onchange="preview(this)"><div class="preview"></div></div>`;
- document.getElementById('items').appendChild(b)
+  const b=document.createElement('div');b.className='item';b.dataset.itemId='item_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);
+  b.innerHTML=`<div class="itemhead"><h3>Item</h3><button type="button" class="danger" onclick="this.closest('.item').remove()">Hapus</button></div>
+  <div class="grid3" style="margin-top:12px">
+  <div><label>Nama Pekerjaan / Produk</label><input class="i-name" value="${esc(data.name||'')}"></div>
+  <div><label>Qty</label><input class="i-qty" type="number" min="0" value="${esc(data.qty||'')}"></div>
+  <div><label>Satuan</label><input class="i-unit" value="${esc(data.unit||'Unit')}"></div></div>
+  <div class="grid3" style="margin-top:12px">
+  <div><label>Ukuran</label><input class="i-size" value="${esc(data.size||'')}"></div>
+  <div><label>Material / Bahan</label><input class="i-material" value="${esc(data.material||'')}"></div>
+  <div><label>Ketebalan</label><input class="i-thickness" value="${esc(data.thickness||'')}"></div></div>
+  <div class="grid3" style="margin-top:12px">
+  <div><label>Finishing</label><input class="i-finishing" value="${esc(data.finishing||'')}"></div>
+  <div><label>Konstruksi</label><input class="i-construction" value="${esc(data.construction||'')}"></div>
+  <div><label>Aksesoris / Bracket</label><input class="i-accessory" value="${esc(data.accessory||'')}"></div></div>
+  <div style="margin-top:12px"><label>Spesifikasi / Instruksi Produksi</label><textarea class="i-spec">${esc(data.spec||'')}</textarea></div>
+  <div style="margin-top:12px"><label>Gambar Kerja / Referensi</label><input class="i-files" type="file" accept="image/*,.pdf" multiple onchange="preview(this)"><div class="preview refPreview"></div></div>
+  <div class="progressBox">
+    <div class="progressHead"><div><label style="margin:0">📸 Progress Pekerjaan</label><div class="muted">Upload foto progress atau ambil langsung dari kamera HP.</div></div><span class="progressBadge">0%</span></div>
+    <div class="grid3" style="margin-top:10px">
+      <div><label>Status</label><select class="i-status" onchange="updateProgressUI(this)"><option>Belum Mulai</option><option>Proses</option><option>Selesai</option><option>Revisi</option></select></div>
+      <div><label>Progress</label><input class="i-progress" type="range" min="0" max="100" step="5" value="0" oninput="updateProgressUI(this)"></div>
+      <div><label>Upload Foto Progress</label><input class="i-progress-files" type="file" accept="image/*" multiple onchange="previewProgress(this)"></div>
+    </div>
+    <div class="actions" style="margin-top:10px">
+      <label class="cameraBtn">📷 Ambil Foto dari Kamera HP
+        <input class="i-camera" type="file" accept="image/*" capture="environment" onchange="previewProgress(this)">
+      </label>
+      <button type="button" class="secondary" onclick="this.closest('.item').querySelector('.i-gallery').click()">＋ Pilih Foto dari Galeri</button>
+      <input class="i-gallery" type="file" accept="image/*" multiple style="display:none" onchange="previewProgress(this)">
+    </div>
+    <div class="progressPreview preview"></div>
+    <div class="progressHistory"></div>
+    <div style="margin-top:10px"><label>Catatan Progress</label><textarea class="i-progress-note" placeholder="Contoh: Cutting selesai, menunggu finishing cat..."></textarea></div>
+    <div class="muted progressTime" style="margin-top:7px"></div>
+  </div>`;
+  document.getElementById('items').appendChild(b);
+
+  const status=b.querySelector('.i-status'), pct=b.querySelector('.i-progress');
+  status.value=data.status||'Belum Mulai'; pct.value=Number(data.progress||0);
+  b.querySelector('.i-progress-note').value=data.progressNote||'';
+  b._progressHistory=Array.isArray(data.progressHistory)?JSON.parse(JSON.stringify(data.progressHistory)):[];
+  if(!b._progressHistory.length && Array.isArray(data.progressFiles) && data.progressFiles.length){ b._progressHistory=[{id:'legacy_'+Date.now(),date:data.progressUpdatedAt||new Date().toISOString(),status:data.status||'Belum Mulai',progress:Number(data.progress||0),note:data.progressNote||'',files:data.progressFiles}]; }
+  if(data.progressUpdatedAt)b.querySelector('.progressTime').textContent='Update terakhir: '+new Date(data.progressUpdatedAt).toLocaleString('id-ID');
+  const refPreview=b.querySelector('.refPreview');
+  (data.files||[]).forEach(f=>appendStoredPreview(refPreview,f));
+  (data.progressFiles||[]).forEach(f=>appendStoredPreview(b.querySelector('.progressPreview'),f));
+  updateProgressUI(pct);
+  renderProgressHistory(b);
 }
+
+function appendStoredPreview(container,f){
+  if(!f || !f.data)return;
+  const q=document.createElement('figure');
+  q.innerHTML=`<img src="${f.data}" alt="${esc(f.name||'Foto')}"><button type="button" class="removePhoto" title="Hapus foto">×</button><figcaption>${esc(f.name||'Foto')}</figcaption>`;
+  q.dataset.file=JSON.stringify(f);
+  q.querySelector('.removePhoto').onclick=()=>q.remove();
+  container.appendChild(q);
+}
+
+function renderProgressHistory(item){
+ const box=item.querySelector('.progressHistory'); if(!box)return;
+ const history=Array.isArray(item._progressHistory)?item._progressHistory:[];
+ box.innerHTML=history.length?history.slice().reverse().map(h=>`<div class="historyCard"><div class="historyHead"><b>${esc(new Date(h.date).toLocaleString('id-ID'))}</b><span>${esc(h.status||'-')} • ${Number(h.progress||0)}%</span></div>${h.note?`<div class="muted" style="margin:3px 0 6px">${esc(h.note)}</div>`:''}<div class="historyPhotos">${(h.files||[]).map(f=>f.data?`<img src="${f.data}" alt="${esc(f.name||'Foto progress')}">`: '').join('')}</div></div>`).join(''):'<div class="muted">Belum ada riwayat foto progress.</div>';
+}
+
+function updateProgressUI(el){
+  const item=el.closest('.item'); if(!item)return;
+  const pct=item.querySelector('.i-progress'), status=item.querySelector('.i-status');
+  if(el.classList.contains('i-status')){
+    if(status.value==='Selesai')pct.value=100;
+    else if(status.value==='Belum Mulai')pct.value=0;
+    else if(status.value==='Proses' && Number(pct.value)===0)pct.value=5;
+  }else{
+    const n=Number(pct.value);
+    if(n===100)status.value='Selesai';
+    else if(n===0)status.value='Belum Mulai';
+    else if(status.value==='Belum Mulai'||status.value==='Selesai')status.value='Proses';
+  }
+  item.querySelector('.progressBadge').textContent=Number(pct.value)+'%';
+}
+
+async function previewProgress(input){
+ const item=input.closest('.item'), p=item.querySelector('.progressPreview');
+ const files=[...input.files]; if(!files.length)return;
+ const batch=[];
+ for(const f of files){ if(!f.type.startsWith('image/'))continue; try{const data=await fileDataURL(f);const obj={name:f.name,type:f.type,sourceType:'progress',data};appendStoredPreview(p,obj);batch.push(obj);}catch(err){console.error(err)} }
+ if(batch.length){
+   if(Number(item.querySelector('.i-progress').value)===0){item.querySelector('.i-progress').value=5;updateProgressUI(item.querySelector('.i-progress'));}
+   const entry={id:'ph_'+Date.now()+'_'+Math.random().toString(36).slice(2,7),date:new Date().toISOString(),status:item.querySelector('.i-status').value,progress:Number(item.querySelector('.i-progress').value||0),note:item.querySelector('.i-progress-note').value||'',files:batch};
+   if(!Array.isArray(item._progressHistory))item._progressHistory=[]; item._progressHistory.push(entry);
+   item.querySelector('.progressTime').textContent='Foto progress diperbarui: '+new Date(entry.date).toLocaleString('id-ID'); renderProgressHistory(item);
+ }
+ input.value='';
+}
+
 async function preview(input){
  const p=input.parentElement.querySelector('.preview');
  p.innerHTML='';
@@ -522,8 +621,21 @@ function fileDataURL(file){
 }
 
 function items(){
- return [...document.querySelectorAll('.item')].map(e=>({name:e.querySelector('.i-name').value,qty:e.querySelector('.i-qty').value,unit:e.querySelector('.i-unit').value,size:e.querySelector('.i-size').value,material:e.querySelector('.i-material').value,thickness:e.querySelector('.i-thickness').value,finishing:e.querySelector('.i-finishing').value,construction:e.querySelector('.i-construction').value,accessory:e.querySelector('.i-accessory').value,spec:e.querySelector('.i-spec').value,files:[...e.querySelectorAll('figure')].map(x=>JSON.parse(x.dataset.file))}))
+  return [...document.querySelectorAll('.item')].map(e=>({
+    name:e.querySelector('.i-name').value,qty:e.querySelector('.i-qty').value,unit:e.querySelector('.i-unit').value,
+    size:e.querySelector('.i-size').value,material:e.querySelector('.i-material').value,thickness:e.querySelector('.i-thickness').value,
+    finishing:e.querySelector('.i-finishing').value,construction:e.querySelector('.i-construction').value,accessory:e.querySelector('.i-accessory').value,
+    spec:e.querySelector('.i-spec').value,
+    files:[...e.querySelectorAll('.refPreview figure')].map(x=>JSON.parse(x.dataset.file)),
+    status:e.querySelector('.i-status').value,
+    progress:Number(e.querySelector('.i-progress').value||0),
+    progressNote:e.querySelector('.i-progress-note').value,
+    progressUpdatedAt:e.querySelector('.progressTime').textContent ? new Date().toISOString() : '',
+    progressFiles:[...e.querySelectorAll('.progressPreview figure')].map(x=>JSON.parse(x.dataset.file)),
+    progressHistory:Array.isArray(e._progressHistory)?e._progressHistory:[]
+  }))
 }
+
 function save(){
  const invoiceNo=document.getElementById('invoiceNo').value.trim(),customer=document.getElementById('customer').value.trim(),its=items();
  if(!invoiceNo||!customer){alert('No. Invoice dan Customer harus tersedia dari invoice.');return}
@@ -617,6 +729,7 @@ function printJO(id){
        }
        return `<div class="file">📄 ${esc(f.name||'Lampiran')}</div>`;
      }).join('')}</div>`:''}
+   ${((x.progressHistory||[]).length)?`<div class="note"><b>Riwayat Progress:</b>${(x.progressHistory||[]).slice().reverse().map(h=>`<div style="margin-top:4px"><b>${esc(new Date(h.date).toLocaleString('id-ID'))}</b> — ${esc(h.status||'-')} — ${Number(h.progress||0)}%${h.note?' — '+esc(h.note):''}<div class="gallery">${(h.files||[]).map(f=>f.data?`<img src="${f.data}" alt="Foto progress">`:'').join('')}</div></div>`).join('')}</div>`:''}
    </div>`;
  });
 
@@ -655,6 +768,36 @@ function printJO(id){
 
 function backup(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(db,null,2)],{type:'application/json'}));a.download='Backup_JO_Produksi.json';a.click()}
 function restore(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.jos)throw 0;db=d;saveDB();alert('Backup berhasil diimport')}catch(x){alert('Backup tidak valid')}};r.readAsText(f)}
+function productionMode(){return new URLSearchParams(location.search).get('mode')==='produksi'}
+function prodDateTime(v){return v?new Date(v).toLocaleString('id-ID',{dateStyle:'medium',timeStyle:'short'}):'-'}
+function renderProduction(){
+ const box=document.getElementById('prodJobs'); if(!box)return;
+ const q=(document.getElementById('prodSearch')?.value||'').toLowerCase();
+ const jobs=db.jos.filter(j=>{
+   const hay=(j.joNo+' '+j.customer+' '+(j.items||[]).map(x=>x.name).join(' ')).toLowerCase();
+   return hay.includes(q);
+ });
+ box.innerHTML=jobs.length?jobs.map(j=>`<div class="prodJob"><div class="prodJobHead"><div><h3>${esc(j.joNo)} — ${esc(j.customer)}</h3><div class="prodMeta">Invoice: ${esc(j.invoiceNo||'-')} · Target: ${esc(fmt(j.targetDate))} · ${j.items.length} item</div></div><span class="progressBadge">${Math.round((j.items.reduce((a,x)=>a+Number(x.progress||0),0)/(j.items.length||1)))}%</span></div><div class="prodMeta" style="margin-top:8px">${j.items.map((x,i)=>`${i+1}. ${esc(x.name||'-')} — ${esc(x.status||'Belum Mulai')} ${Number(x.progress||0)}%`).join('<br>')}</div><button class="prodAction" onclick="toggleProdJob('${j.id}')">✏️ Update Progress</button><div class="prodEditor" id="prodEdit_${j.id}">${j.items.map((x,i)=>productionItemEditor(j,i,x)).join('')}</div></div>`).join(''):'<div class="muted" style="padding:20px;text-align:center">Belum ada JO. Buat JO dari mode admin terlebih dahulu.</div>';
+}
+function productionItemEditor(j,index,x){
+ const hist=Array.isArray(x.progressHistory)?x.progressHistory:[];
+ return `<div class="card" style="margin:10px 0;background:#f8fafc"><b>${index+1}. ${esc(x.name||'-')}</b><div class="prodMeta">Qty ${esc(x.qty||'-')} ${esc(x.unit||'')} · ${esc(x.size||'-')}</div><div class="prodGrid" style="margin-top:10px"><div><label>PIC Produksi</label><input class="prod-pic" value="${esc(x.pic||j.pic||'')}"></div><div><label>Status</label><select class="prod-status"><option>Belum Mulai</option><option>Proses</option><option>Selesai</option><option>Revisi</option></select></div><div><label>Progress</label><input class="prod-progress" type="range" min="0" max="100" step="5" value="${Number(x.progress||0)}"><div class="prodPct"><b>${Number(x.progress||0)}%</b></div></div><div><label>Foto Progress</label><input class="prod-files" type="file" accept="image/*" multiple></div><div class="full"><label>Catatan Progress</label><textarea class="prod-note" placeholder="Catatan progress..."></textarea></div><div class="full"><button type="button" class="secondary" onclick="this.parentElement.parentElement.querySelector('.prod-camera').click()">📷 Ambil Foto Kamera HP</button><input class="prod-camera" type="file" accept="image/*" capture="environment" multiple style="display:none"><div class="prod-newphotos preview"></div></div><div class="full"><button class="prodSave" type="button" onclick="saveProductionUpdate('${j.id}',${index},this)">💾 Simpan Progress</button></div></div><div class="prodTimeline">${hist.slice().reverse().map(h=>`<div class="prodTimelineCard"><b>${prodDateTime(h.date)}</b> · ${esc(h.status||'-')} · ${Number(h.progress||0)}%<br><span>${esc(h.pic||'')}${h.note?' — '+esc(h.note):''}</span><div class="prodTimelinePhotos">${(h.files||[]).map(f=>f.data?`<img src="${f.data}">`:'').join('')}</div></div>`).join('')}</div></div>`;
+}
+function toggleProdJob(id){const el=document.getElementById('prodEdit_'+id);if(el){el.classList.toggle('open');if(el.classList.contains('open')){el.querySelectorAll('.prod-status').forEach((s,i)=>s.value=(db.jos.find(j=>j.id===id)?.items[i]?.status||'Belum Mulai'));el.querySelectorAll('.prod-progress').forEach(r=>{r.oninput=()=>{r.parentElement.querySelector('.prodPct b').textContent=r.value+'%';}})}}}
+async function prodReadFiles(input, camera=false){const wrap=input.closest('.prodGrid').querySelector('.prod-newphotos');const files=[...input.files];for(const f of files){if(!f.type.startsWith('image/'))continue;const data=await fileDataURL(f);const q=document.createElement('figure');q.innerHTML=`<img src="${data}"><figcaption>${esc(f.name||'Foto')}</figcaption>`;q.dataset.file=JSON.stringify({name:f.name,type:f.type,sourceType:'progress',data});wrap.appendChild(q)}input.value=''}
+function saveProductionUpdate(id,index,btn){
+ const j=db.jos.find(x=>x.id===id);if(!j)return;const editor=btn.closest('.card');const pic=editor.querySelector('.prod-pic').value.trim();const status=editor.querySelector('.prod-status').value;const progress=Number(editor.querySelector('.prod-progress').value||0);const note=editor.querySelector('.prod-note').value.trim();const files=[...editor.querySelector('.prod-newphotos').querySelectorAll('figure')].map(x=>JSON.parse(x.dataset.file));
+ if(!pic){alert('PIC Produksi wajib diisi.');return} if(!files.length){alert('Silakan ambil/upload minimal 1 foto progress.');return}
+ const item=j.items[index];item.pic=pic;item.status=status;item.progress=progress;item.progressNote=note;item.progressUpdatedAt=new Date().toISOString();if(!Array.isArray(item.progressHistory))item.progressHistory=[];item.progressHistory.push({id:'ph_'+Date.now(),date:new Date().toISOString(),pic,status,progress,note,files});j.pic=pic;j.updatedAt=new Date().toISOString();saveDB();renderProduction();alert('Progress berhasil disimpan. Foto tersimpan di data JO pada perangkat ini.');
+}
+function initMode(){
+ if(!productionMode())return;
+ document.body.classList.add('prod-mode');document.querySelectorAll('.admin-only').forEach(x=>x.style.display='none');
+ document.getElementById('dashboard').classList.add('hidden');document.getElementById('import').classList.add('hidden');document.getElementById('production').classList.remove('production-only');renderProduction();
+}
+
+document.addEventListener('change',e=>{if(e.target.matches('.prod-files,.prod-camera'))prodReadFiles(e.target)});
+initMode();
 setInterval(()=>document.getElementById('clock').textContent=new Date().toLocaleString('id-ID',{dateStyle:'medium',timeStyle:'short'}),1000);render();metrics();
 </script>
 </body></html>
