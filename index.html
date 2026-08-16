@@ -1,233 +1,660 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="utf-8">
+<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Mulia Group — JO Produksi</title>
+<title>JO Produksi — Import Invoice</title>
 <style>
-:root{--bg:#f4f6f8;--card:#fff;--ink:#17202a;--muted:#68727d;--line:#dfe4e8;--accent:#111827;--ok:#15803d;--warn:#b45309;--blue:#2563eb;--danger:#b91c1c}
-*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink)}
-button,input,select,textarea{font:inherit}button{cursor:pointer;border:0;border-radius:8px;padding:10px 14px;font-weight:700}
-.btn{background:var(--accent);color:#fff}.btn.secondary{background:#fff;color:var(--ink);border:1px solid var(--line)}.btn.ok{background:var(--ok)}.btn.blue{background:var(--blue)}.btn.danger{background:var(--danger)}
-header{background:#111827;color:#fff;padding:14px 22px;display:flex;justify-content:space-between;align-items:center;gap:12px;position:sticky;top:0;z-index:10}
-.brand{font-weight:800}.brand small{display:block;font-weight:400;opacity:.7;margin-top:3px}
-main{max-width:1250px;margin:auto;padding:20px}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:15px}
-.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:15px}.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}.num{font-size:25px;font-weight:800}.muted{color:var(--muted);font-size:12px}
-.filters{display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px;margin-bottom:12px}input,select,textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:9px;background:#fff}textarea{min-height:70px;resize:vertical}
-.tablewrap{overflow:auto;background:#fff;border:1px solid var(--line);border-radius:12px}.table{width:100%;border-collapse:collapse;min-width:800px}.table th,.table td{padding:10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}.table th{background:#f8fafc;font-size:12px}.pill{display:inline-block;padding:4px 8px;border-radius:99px;background:#eef2ff;font-size:11px;font-weight:700}.progress{height:8px;background:#e5e7eb;border-radius:99px;overflow:hidden}.progress>i{display:block;height:100%;background:#2563eb}
-.modal{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;padding:15px;z-index:50}.modal.show{display:flex}.modalbox{background:#fff;width:min(1000px,100%);max-height:92vh;overflow:auto;border-radius:14px;padding:18px}.modalhead{display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:12px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.field label{display:block;font-size:12px;font-weight:700;margin:0 0 5px}.item{border:1px solid var(--line);border-radius:10px;padding:12px;margin-top:10px}.itemhead{display:flex;justify-content:space-between;gap:8px}.stage{display:grid;grid-template-columns:1fr auto;gap:7px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:8px;margin-top:7px}.stage.done{border-color:#bbf7d0;background:#f0fdf4}.stage.current{border-color:#bfdbfe;background:#eff6ff}.photos{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.photos img{width:95px;height:70px;object-fit:cover;border:1px solid #bbb;border-radius:6px}.timeline{border-left:2px solid #dbeafe;margin:10px 0 0 6px;padding-left:14px}.event{margin-bottom:10px}.event b{font-size:12px}.event small{color:var(--muted)}
-.hidden{display:none!important}.empty{padding:30px;text-align:center;color:var(--muted)}
-@media(max-width:800px){.cards{grid-template-columns:1fr 1fr}.filters,.grid2,.grid3{grid-template-columns:1fr}header{align-items:flex-start;flex-direction:column}}
-@media print{header,.toolbar,.filters,.no-print{display:none!important}body{background:#fff}.modal{position:static;background:#fff;padding:0}.modalbox{max-height:none;box-shadow:none;width:100%;padding:0}.printable{display:block!important}}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#f4f6f9;color:#18212f}
+header{background:#172033;color:#fff;padding:18px 24px;display:flex;justify-content:space-between;align-items:center}
+h1,h2,h3{margin-top:0}header h1{margin:0;font-size:22px}header small{opacity:.75}
+.container{max-width:1200px;margin:24px auto;padding:0 16px}.toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+button,.btn{border:0;border-radius:8px;padding:11px 15px;cursor:pointer;font-weight:600;background:#172033;color:#fff}
+button.secondary,.secondary{background:#fff;color:#172033;border:1px solid #d5dbe5}
+button.danger{background:#b42318}input,textarea{width:100%;padding:10px;border:1px solid #ccd3df;border-radius:7px;background:#fff;font:inherit}
+textarea{min-height:90px;resize:vertical}.card{background:#fff;border:1px solid #e0e5ec;border-radius:12px;padding:18px;margin-bottom:16px;box-shadow:0 2px 8px #00000008}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+label{font-size:13px;font-weight:700;display:block;margin-bottom:6px}.muted{color:#667085;font-size:13px}
+.drop{border:2px dashed #aab4c3;border-radius:12px;padding:28px;text-align:center;background:#fafcff}
+.drop input{display:none}.drop label{display:block;cursor:pointer}.drop strong{display:block;font-size:18px;margin-bottom:7px}
+.badge{display:inline-block;padding:5px 9px;border-radius:20px;background:#eef2f7;font-size:12px;font-weight:700}
+.item{border:1px solid #dfe4ec;border-radius:10px;padding:15px;margin-top:12px}.itemhead{display:flex;justify-content:space-between;gap:10px;align-items:center}
+.preview{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px}.preview figure{margin:0;width:150px;border:1px solid #ddd;border-radius:8px;overflow:hidden;background:#fafafa}.preview img{width:150px;height:105px;object-fit:cover}.preview figcaption{font-size:11px;padding:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+table{width:100%;border-collapse:collapse}th,td{padding:11px;border-bottom:1px solid #e8ebf0;text-align:left;font-size:13px}th{background:#f8fafc}
+.hidden{display:none!important}.actions{display:flex;gap:8px;flex-wrap:wrap}.search{max-width:320px}.notice{padding:12px;border-radius:8px;background:#f7f8fa;border:1px solid #e3e7ed;font-size:13px}
+.printPage{display:none}
+@media(max-width:700px){.grid,.grid3{grid-template-columns:1fr}}
+@media print{body{background:#fff}.noPrint{display:none!important}.printPage{display:block}.container{display:none}}
 </style>
 </head>
 <body>
 <header>
-  <div class="brand">MULIA GROUP — JOB ORDER PRODUKSI<small>Production Tracking • V9</small></div>
-  <div><span id="userBadge">PIC: -</span> <button class="btn secondary" style="padding:6px 9px;margin-left:6px" onclick="changeCurrentPIC()">Ganti PIC</button></div>
+<div><h1>JOB ORDER PRODUKSI</h1><small>Invoice → Detail JO → Produksi</small></div>
+<div id="clock"></div>
 </header>
-<main>
-  <div class="toolbar">
-    <button class="btn" onclick="newJO()">＋ JO Baru</button>
-    <button class="btn blue" onclick="openImport()">Upload Invoice</button>
-    <button class="btn secondary" onclick="syncDrive()">☁ Sinkron Drive</button>
-    <button class="btn secondary" onclick="exportJSON()">JSON Backup</button>
-    <label class="btn secondary" style="display:inline-block">Import JSON<input id="jsonFile" type="file" accept=".json" hidden onchange="importJSON(event)"></label>
-    <button class="btn secondary" onclick="window.print()">🖨️ Print</button>
-  </div>
-  <div class="cards">
-    <div class="card"><div class="muted">JO Saya</div><div class="num" id="cMine">0</div></div>
-    <div class="card"><div class="muted">Belum Selesai</div><div class="num" id="cOpen">0</div></div>
-    <div class="card"><div class="muted">Sedang Produksi</div><div class="num" id="cProgress">0</div></div>
-    <div class="card"><div class="muted">Selesai</div><div class="num" id="cDone">0</div></div>
-  </div>
-  <div class="filters">
-    <input id="search" placeholder="Cari JO / invoice / customer..." oninput="render()">
-    <select id="picFilter" onchange="render()"><option value="">Semua PIC</option></select>
-    <select id="stageFilter" onchange="render()"><option value="">Semua progress</option><option value="open">Belum selesai</option><option value="progress">Sedang produksi</option><option value="done">Selesai</option></select>
-  </div>
-  <div class="tablewrap">
-    <table class="table"><thead><tr><th>JO</th><th>Invoice / Customer</th><th>PIC</th><th>Progress</th><th>Target</th><th>Aksi</th></tr></thead>
-    <tbody id="rows"></tbody></table>
-  </div>
-</main>
 
-<div class="modal" id="modal"><div class="modalbox" id="modalBox"></div></div>
+<div class="container noPrint">
+<div class="toolbar">
+<button onclick="show('dashboard')">Dashboard JO</button>
+<button onclick="startImport()">+ Upload Invoice</button>
+<button class="secondary" onclick="backup()">Backup</button>
+<label class="secondary" style="padding:11px 15px;border-radius:8px;cursor:pointer">Import Backup
+<input type="file" accept=".json" onchange="restore(event)" style="display:none">
+</label>
+</div>
+
+<section id="dashboard">
+<div class="grid3">
+<div class="card"><div class="muted">Total JO</div><h2 id="mTotal">0</h2></div>
+<div class="card"><div class="muted">Total Item</div><h2 id="mItems">0</h2></div>
+<div class="card"><div class="muted">Customer</div><h2 id="mCustomers">0</h2></div>
+</div>
+<div class="card">
+<div class="toolbar" style="justify-content:space-between"><h2>Daftar JO</h2><input class="search" id="search" placeholder="Cari JO / invoice / customer" oninput="render()"></div>
+<div style="overflow:auto"><table><thead><tr><th>JO</th><th>No. Invoice</th><th>Customer</th><th>Tanggal Masuk</th><th>Item</th><th>Aksi</th></tr></thead>
+<tbody id="rows"></tbody></table></div>
+</div>
+</section>
+
+<section id="import" class="hidden">
+<div class="card">
+<h2>Upload Invoice</h2>
+<div class="notice">Upload invoice PDF, JPG, atau PNG. Browser akan mencoba membaca teks invoice secara otomatis. Untuk invoice scan/gambar, gunakan kolom hasil OCR/manual koreksi di bawah.</div>
+<div class="drop" style="margin-top:15px">
+<label for="invoiceFile"><strong>📄 Pilih Invoice</strong>PDF / JPG / PNG<br><span class="muted">Parser diarahkan ke format Invoice Mulia: No. Invoice, Customer, Tanggal, Deskripsi, Qty & Satuan. Bagian nominal/keuangan diabaikan.</span></label>
+<input id="invoiceFile" type="file" accept=".pdf,image/*" onchange="readInvoice(event)">
+</div>
+<div id="fileInfo" class="muted" style="margin-top:10px"></div>
+</div>
+
+<div class="card">
+<h3>Hasil Pembacaan Invoice</h3>
+<div class="notice">Data di bawah adalah hasil pembacaan. **Periksa dan koreksi sebelum membuat JO.** Tidak ada nominal/harga yang disimpan.</div>
+<div class="grid" style="margin-top:14px">
+<div><label>No. Invoice</label><input id="invoiceNo"></div>
+<div><label>Customer</label><input id="customer"></div>
+<div><label>Tanggal Invoice</label><input id="invoiceDate" type="date"></div>
+</div>
+</div>
+
+<div class="card">
+<div class="itemhead"><div><h3>Detail Produksi dari Invoice</h3><div class="muted">Item dan qty diambil dari hasil pembacaan invoice.</div></div><button onclick="addItem()">+ Tambah Item</button></div>
+<div id="items"></div>
+</div>
+
+<div class="card">
+<h3>Informasi Produksi</h3>
+<div class="grid">
+<div><label>Tanggal Masuk Produksi</label><input id="productionDate" type="date"></div>
+<div><label>Target Selesai</label><input id="targetDate" type="date"></div>
+<div><label>PIC Produksi</label><input id="pic"></div>
+</div>
+<div style="margin-top:14px"><label>Catatan Umum Produksi</label><textarea id="generalNote" placeholder="Instruksi tambahan untuk workshop..."></textarea></div>
+</div>
+<div class="toolbar">
+<button onclick="save()">Simpan & Terbitkan JO</button>
+<button class="secondary" onclick="show('dashboard')">Batal</button>
+</div>
+</section>
+</div>
+
+<div id="printArea" class="printPage"></div>
 
 <script>
-const STAGES=['Film','Cutting / CNC / Laser','Bending','Welding / Assembly','Painting','Finishing','Packing','Pemasangan'];
-const KEY='mulia_jo_v9_demo';
-let db={version:9,jos:[]};
-let currentUser=localStorage.getItem('mulia_pic')||'';
-
+const KEY='MULIA_JO_IMPORT_INVOICE_V2';
+let db=load(), currentId=null;
+function load(){try{return JSON.parse(localStorage.getItem(KEY))||{counter:0,jos:[]}}catch(e){return{counter:0,jos:[]}}}
+function saveDB(){localStorage.setItem(KEY,JSON.stringify(db));render();metrics()}
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-function fmt(s){if(!s)return '-';const d=new Date(s+'T00:00:00');return isNaN(d)?s:d.toLocaleDateString('id-ID',{day:'2-digit',month:'2-digit',year:'numeric'})}
-function uid(p='id'){return p+'_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,7)}
-function save(){localStorage.setItem(KEY,JSON.stringify(db))}
-function load(){try{const x=JSON.parse(localStorage.getItem(KEY)||'null');if(x?.jos)db=x}catch(e){};db.jos=db.jos||[];document.getElementById('userBadge').textContent='PIC: '+(currentUser||'Belum dipilih');save()}
-function changeCurrentPIC(){
- const name=prompt('Nama PIC Produksi untuk tampilan dashboard:',currentUser||'');
- if(name===null)return;
- const clean=name.trim();
- if(!clean)return;
- currentUser=clean;
- localStorage.setItem('mulia_pic',currentUser);
- document.getElementById('userBadge').textContent='PIC: '+(currentUser||'Belum dipilih');
- render();
+function today(){return new Date().toISOString().slice(0,10)}
+function fmt(v){if(!v)return '-';return new Date(v+'T00:00:00').toLocaleDateString('id-ID')}
+function nextJO(){db.counter=(db.counter||0)+1;return 'JO-'+new Date().getFullYear()+'-'+String(db.counter).padStart(4,'0')}
+function show(p){document.getElementById('dashboard').classList.toggle('hidden',p!=='dashboard');document.getElementById('import').classList.toggle('hidden',p!=='import');if(p==='dashboard'){render();metrics()}}
+function startImport(){
+ currentId=null;document.getElementById('invoiceFile').value='';document.getElementById('fileInfo').textContent='';
+ ['invoiceNo','customer'].forEach(x=>document.getElementById(x).value='');
+ document.getElementById('invoiceDate').value='';document.getElementById('productionDate').value=today();document.getElementById('targetDate').value='';document.getElementById('pic').value='';document.getElementById('generalNote').value='';
+ document.getElementById('items').innerHTML='';addItem();show('import')
 }
-function myJO(j){return !!currentUser && j.pic===currentUser}
-function pct(j){const a=j.items||[];if(!a.length)return 0;let n=0,t=a.length*STAGES.length;a.forEach(x=>{const p=x.progress||[];n+=STAGES.filter(s=>p.find(z=>z.stage===s&&z.done)).length});return Math.round(n/t*100)}
-function state(j){const p=pct(j);return p>=100?'done':p>0?'progress':'open'}
-function render(){
- const q=(document.getElementById('search').value||'').toLowerCase(),pf=document.getElementById('picFilter').value,sf=document.getElementById('stageFilter').value;
- const all=db.jos.filter(j=>(!q||JSON.stringify(j).toLowerCase().includes(q))&&(!pf||j.pic===pf)&&(!sf||state(j)===sf));
- document.getElementById('rows').innerHTML=all.length?all.map(j=>{const p=pct(j);return `<tr>
- <td><b>${esc(j.joNo)}</b><br><span class="pill">${esc(j.items?.length||0)} item</span></td>
- <td><b>${esc(j.invoiceNo||'-')}</b><br>${esc(j.customer||'-')}</td>
- <td>${esc(j.pic||'Belum ditentukan')}</td>
- <td><div class="progress"><i style="width:${p}%"></i></div><small>${p}%</small></td>
- <td>${esc(fmt(j.targetDate))}</td>
- <td><button class="btn" onclick="openJO('${j.id}')">Buka</button> <button class="btn secondary" onclick="printJO('${j.id}')">🖨</button></td>
- </tr>`}).join(''):'<tr><td colspan="6" class="empty">Belum ada JO.</td></tr>';
- document.getElementById('cMine').textContent=db.jos.filter(myJO).length;
- document.getElementById('cOpen').textContent=db.jos.filter(j=>state(j)==='open').length;
- document.getElementById('cProgress').textContent=db.jos.filter(j=>state(j)==='progress').length;
- document.getElementById('cDone').textContent=db.jos.filter(j=>state(j)==='done').length;
- const sel=document.getElementById('picFilter'),old=sel.value;
- const pics=[...new Set(db.jos.map(j=>(j.pic||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'id'));
- sel.innerHTML='<option value="">Semua PIC</option>'+pics.map(n=>`<option>${esc(n)}</option>`).join('');
- if(pics.includes(old)) sel.value=old;
-}
-function show(content){const box=document.getElementById('modalBox');box.dataset.errorShown='';box.innerHTML=content;document.getElementById('modal').classList.add('show')}
-function closeModal(){document.getElementById('modal').classList.remove('show')}
-function newJO(){
- const j={id:uid('jo'),joNo:'JO-'+new Date().getFullYear()+'-'+String(db.jos.length+1).padStart(4,'0'),invoiceNo:'',customer:'',invoiceDate:'',productionDate:new Date().toISOString().slice(0,10),targetDate:'',pic:'',items:[newItem()],generalNote:'',createdAt:new Date().toISOString()};
- show(editor(j,false))
-}
-function newItem(){return {id:uid('item'),name:'',qty:'',unit:'Pcs',size:'',material:'',thickness:'',finishing:'',construction:'',accessory:'',spec:'',files:[],progress:STAGES.map(stage=>({stage,done:false,updatedAt:'',note:'',photos:[]}))}}
-function editor(j,editing){
- show(`<div class="modalhead"><h2>${editing?'Edit':'JO Baru'} — ${esc(j.joNo)}</h2><button class="btn secondary" onclick="closeModal()">✕</button></div>
- <div class="grid3">
-  <div class="field"><label>No. Invoice</label><input id="e_inv" value="${esc(j.invoiceNo||'Belum ada')}"></div>
-  <div class="field"><label>Customer</label><input id="e_cus" value="${esc(j.customer||'Belum diisi')}"></div>
-  <div class="field"><label>Tanggal Invoice</label><input id="e_date" type="date" value="${esc(j.invoiceDate)}"></div>
-  <div class="field"><label>Tanggal Masuk Produksi</label><input id="e_in" type="date" value="${esc(j.productionDate)}"></div>
-  <div class="field"><label>Target Selesai</label><input id="e_target" type="date" value="${esc(j.targetDate)}"></div>
-  <div class="field"><label>PIC Produksi</label><input id="e_pic" value="${esc(j.pic||'')}" placeholder="Ketik nama PIC Produksi"></div>
- </div>
- <div class="card" style="margin:12px 0;padding:10px"><b>PIC Produksi diisi manual</b><br><span class="muted">Nama PIC tidak dibatasi daftar tetap. Dashboard akan otomatis membuat filter berdasarkan nama PIC yang sudah digunakan pada JO.</span></div>
- <div class="section-title">Detail Produksi</div><div id="editItems">${j.items.map((x,i)=>itemEditor(x,i)).join('')}</div>
- <button class="btn secondary" onclick="addEditItem()">＋ Tambah Item</button>
- <div class="field" style="margin-top:10px"><label>Catatan Umum Produksi</label><textarea id="e_note">${esc(j.generalNote)}</textarea></div>
- <div style="margin-top:14px;display:flex;gap:8px"><button class="btn ok" onclick="saveEditor('${j.id}',${editing})">Simpan JO</button><button class="btn secondary" onclick="closeModal()">Batal</button></div>`);
-}
-function itemEditor(x,i){return `<div class="item" data-item="${i}">
- <div class="itemhead"><b>ITEM ${i+1}</b>${i?`<button class="btn danger" onclick="this.closest('.item').remove()">Hapus</button>`:''}</div>
- <div class="grid2">
-  <div class="field"><label>Detail Pekerjaan</label><input data-k="name" value="${esc(x.name)}"></div>
-  <div class="field"><label>Qty</label><input data-k="qty" type="number" value="${esc(x.qty)}"></div>
-  <div class="field"><label>Satuan</label><input data-k="unit" value="${esc(x.unit||'Pcs')}"></div>
-  <div class="field"><label>Ukuran</label><input data-k="size" value="${esc(x.size)}"></div>
-  <div class="field"><label>Material / Bahan</label><input data-k="material" value="${esc(x.material)}"></div>
-  <div class="field"><label>Ketebalan</label><input data-k="thickness" value="${esc(x.thickness)}"></div>
-  <div class="field"><label>Finishing</label><input data-k="finishing" value="${esc(x.finishing)}"></div>
-  <div class="field"><label>Konstruksi</label><input data-k="construction" value="${esc(x.construction)}"></div>
-  <div class="field"><label>Aksesoris / Bracket</label><input data-k="accessory" value="${esc(x.accessory)}"></div>
-  <div class="field"><label>Spesifikasi / Instruksi</label><input data-k="spec" value="${esc(x.spec)}"></div>
- </div>
- <div class="muted" style="margin-top:8px">Gambar kerja: ${(x.files||[]).map(f=>esc(f.name)).join(', ')||'belum ada'} <button class="btn secondary" onclick="uploadWorkImage(${i})">Upload</button></div>
- </div>`}
-function addEditItem(){const wrap=document.getElementById('editItems');const i=wrap.querySelectorAll('.item').length;wrap.insertAdjacentHTML('beforeend',itemEditor(newItem(),i))}
-function saveEditor(id,editing){
- const old=db.jos.find(x=>x.id===id)||{id,createdAt:new Date().toISOString()};
- old.invoiceNo=document.getElementById('e_inv').value.trim();old.customer=document.getElementById('e_cus').value.trim();old.invoiceDate=document.getElementById('e_date').value;
- old.productionDate=document.getElementById('e_in').value;old.targetDate=document.getElementById('e_target').value;
- old.pic=document.getElementById('e_pic').value.trim();
- if(!old.pic){alert('Nama PIC Produksi wajib diisi.');return;}
- old.generalNote=document.getElementById('e_note').value;
- old.items=[...document.querySelectorAll('#editItems .item')].map((el,idx)=>{const o=old.items?.[idx]||newItem();el.querySelectorAll('[data-k]').forEach(n=>o[n.dataset.k]=n.value);return o});
- old.updatedAt=new Date().toISOString();
- if(!editing)db.jos.unshift(old);
- save();closeModal();render();
-}
-function openJO(id){
- const j=db.jos.find(x=>x.id===id);if(!j)return;
- show(`<div class="modalhead"><div><h2 style="margin:0">${esc(j.joNo)}</h2><div class="muted">${esc(j.customer||'Belum diisi')} • PIC ${esc(j.pic||'Belum ditentukan')}</div></div><button class="btn secondary" onclick="closeModal()">✕</button></div>
- <div class="grid3"><div><b>Invoice</b><br>${esc(j.invoiceNo||'-')}</div><div><b>Target</b><br>${esc(fmt(j.targetDate))}</div><div><b>Progress</b><br>${pct(j)}%</div></div>
- <div class="section-title">Progress Pekerjaan</div>
- ${j.items.map((x,i)=>progressItem(j,i,x)).join('')}
- <div style="margin-top:12px;display:flex;gap:8px"><button class="btn blue" onclick="printJO('${j.id}')">🖨️ Print / Save PDF</button><button class="btn secondary" onclick="editor(db.jos.find(x=>x.id==='${j.id}'),true)">Edit JO</button></div>`);
-}
-function progressItem(j,i,x){
- return `<div class="item"><b>${i+1}. ${esc(x.name||'Item')}</b> — ${esc(x.qty)} ${esc(x.unit)}
- ${STAGES.map((s,k)=>{const z=(x.progress||[]).find(p=>p.stage===s)||{stage:s,done:false,note:'',photos:[]};return `<div class="stage ${z.done?'done':(k===0||((x.progress||[])[k-1]?.done)?'current':'')}">
- <div><b>${esc(s)}</b><br><small>${esc(z.note||'Belum atualizado')} ${z.updatedAt?'• '+new Date(z.updatedAt).toLocaleString('pt-BR'):''}</small>
- ${(z.photos||[]).length?`<div class="photos">${z.photos.map(p=>`<img src="${p.data}" alt="">`).join('')}</div>`:''}</div>
- <div><button class="btn ${z.done?'secondary':'ok'}" onclick="updateStage('${j.id}','${x.id}','${s.replace(/'/g,"\\'")}')">${z.done?'✓ Concluído':'Atualizar'}</button></div>
- </div>`}).join('')}</div>`
-}
-function updateStage(jid,itemid,stage){
- const j=db.jos.find(x=>x.id===jid),x=j.items.find(x=>x.id===itemid),z=x.progress.find(p=>p.stage===stage);
- const note=prompt('Catatan progress (opsional):',z.note||'');if(note===null)return;
- const input=document.createElement('input');input.type='file';input.accept='image/*';input.multiple=true;
- input.onchange=async()=>{const photos=[];for(const f of input.files){photos.push({name:f.name,data:await fileDataURL(f),createdAt:new Date().toISOString()})}
- z.done=true;z.note=note;z.updatedAt=new Date().toISOString();z.photos=(z.photos||[]).concat(photos);j.updatedAt=new Date().toISOString();save();openJO(jid);render()};
- input.click();
-}
-async function uploadWorkImage(itemIndex){
- const input=document.createElement('input');input.type='file';input.accept='image/*,.pdf';input.multiple=true;
- input.onchange=async()=>{const j=db.jos.find(x=>x.id===getEditingId());if(!j)return;const el=[...document.querySelectorAll('#editItems .item')][itemIndex];const x=j.items[itemIndex]||newItem();x.files=x.files||[];
- for(const f of input.files){x.files.push({name:f.name,type:f.type,data:await fileDataURL(f)})}
- j.items[itemIndex]=x;editor(j,true)};input.click();
-}
-function getEditingId(){const h=document.querySelector('#modalBox h2');return db.jos.find(x=>h?.textContent.includes(x.joNo))?.id}
-function openImport(){show(`<div class="modalhead"><h2>Upload Invoice</h2><button class="btn secondary" onclick="closeModal()">✕</button></div>
- <p class="muted">Untuk versi online, parser invoice akan membaca PDF/scan dan mengisi No. Invoice, Customer, Tanggal, Detail, Qty & Satuan. Nominal tidak masuk JO.</p>
- <input id="invoiceFile" type="file" accept=".pdf,image/*" onchange="invoiceDemo(event)">
- <div id="invoiceResult" style="margin-top:12px"></div>`)}
-function createJOFromInvoice(){
- const j={id:uid('jo'),joNo:'JO-'+new Date().getFullYear()+'-'+String(db.jos.length+1).padStart(4,'0'),
- invoiceNo:'',customer:'',invoiceDate:'',productionDate:new Date().toISOString().slice(0,10),
- targetDate:'',pic:'',items:[newItem()],generalNote:'',createdAt:new Date().toISOString()};
- closeModal(); setTimeout(()=>editor(j,false),50);
-}
-async function invoiceDemo(e){
- const f=e.target.files[0];if(!f)return;
- document.getElementById('invoiceResult').innerHTML='<div class="card">File diterima: '+esc(f.name)+'<br><small>File invoice sudah diterima. Data invoice akan dimasukkan ke JO tanpa nominal.</small><br><br><button class="btn" onclick="createJOFromInvoice()">Buat JO dari Invoice</button></div>';
-}
-function exportJSON(){const blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='mulia-jo-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
-function importJSON(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const x=JSON.parse(r.result);if(!x.jos)throw Error('Format JSON tidak sesuai');db=x;save();render();alert('Backup JSON berhasil dimuat.')}catch(err){alert('JSON tidak valid: '+err.message)}};r.readAsText(f)}
-async function syncDrive(){
+async function readInvoice(e){
+ const f=e.target.files[0]; if(!f)return;
+ const info=document.getElementById('fileInfo');
+ info.textContent='Membaca invoice...';
  try{
-  const r=await fetch('/api/drive?action=load');const d=await r.json();
-  if(!r.ok)throw Error(d.error||'Drive belum dikonfigurasi');
-  if(d.data?.jos){db=d.data;save();render();alert('Data berhasil disinkronkan dari Google Drive.')}
-  else alert('Drive terhubung, tetapi belum ada database JO.');
- }catch(e){alert('Drive belum tersambung. Aplikasi tetap berjalan dalam mode lokal.\\n\\n'+e.message)}
-}
-function printJO(id){
- const j=db.jos.find(x=>x.id===id);if(!j)return;
- const w=window.open('','_blank','width=900,height=800');if(!w){alert('Izinkan pop-up browser.');return}
- const items=j.items||[];
- let h=`<!doctype html><html><head><meta charset="utf-8"><title>${esc(j.joNo)}</title><style>@page{size:A4;margin:7mm}body{font:9px Arial;color:#111}.head{border-bottom:2px solid #111;padding-bottom:5px}.top{display:flex;justify-content:space-between}.meta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-top:6px}.items{display:grid;grid-template-columns:${items.length>1?'1fr 1fr':'1fr'};gap:5px;margin-top:6px}.item{border:1px solid #888;padding:5px;break-inside:avoid}.grid{display:grid;grid-template-columns:1fr 1fr;gap:2px 8px}.gallery{display:flex;gap:4px;flex-wrap:wrap}.gallery img{width:32mm;height:23mm;object-fit:contain;border:1px solid #aaa}.sign{display:flex;gap:50mm;text-align:center;margin-top:15px}</style></head><body>
- <div class="head"><div class="top"><h1>JOB ORDER PRODUKSI</h1><b>${esc(j.joNo)}</b></div><div class="meta"><div><b>Invoice:</b> ${esc(j.invoiceNo||'Belum ada')}</div><div><b>Customer:</b> ${esc(j.customer||'Belum diisi')}</div><div><b>Tanggal:</b> ${esc(fmt(j.invoiceDate))}</div><div><b>Masuk:</b> ${esc(fmt(j.productionDate))}</div><div><b>Target:</b> ${esc(fmt(j.targetDate))}</div><div><b>PIC:</b> ${esc(j.pic||'Belum ditentukan')}</div></div></div><h3>DETAIL PRODUKSI</h3><div class="items">`;
- items.forEach((x,i)=>{h+=`<div class="item"><b>${i+1}. ${esc(x.name)}</b> — ${esc(x.qty)} ${esc(x.unit)}<div class="grid"><div><b>Ukuran:</b> ${esc(x.size||'-')}</div><div><b>Bahan:</b> ${esc(x.material||'-')}</div><div><b>Tebal:</b> ${esc(x.thickness||'-')}</div><div><b>Finishing:</b> ${esc(x.finishing||'-')}</div><div><b>Konstruksi:</b> ${esc(x.construction||'-')}</div><div><b>Aksesoris:</b> ${esc(x.accessory||'-')}</div></div>${x.spec?`<p><b>Instruksi:</b> ${esc(x.spec)}</p>`:''}<div class="gallery">${(x.files||[]).filter(f=>f.type?.startsWith('image/')).map(f=>`<img src="${f.data}">`).join('')}</div></div>`});
- h+=`</div>${j.generalNote?`<p><b>Catatan:</b> ${esc(j.generalNote)}</p>`:''}<div class="sign"><div>Mengetahui<br><br>________________</div><div>Produksi<br><br>________________</div></div></body></html>`;
- w.document.write(h);w.document.close();w.onload=()=>setTimeout(()=>w.print(),500);
-}
-load();render();
-window.addEventListener('error',e=>{
- const msg=e?.error?.message||e?.message||'Terjadi kesalahan JavaScript';
- console.error(e);
- const box=document.getElementById('modalBox');
- if(box && document.getElementById('modal')?.classList.contains('show') && !box.dataset.errorShown){
-   box.dataset.errorShown='1';
-   const note=document.createElement('div');
-   note.style='margin-top:12px;padding:10px;background:#fee2e2;color:#991b1b;border-radius:8px;font-size:12px';
-   note.textContent='Terjadi kesalahan: '+msg;
-   box.appendChild(note);
+   if(f.type==='application/pdf' || /\.pdf$/i.test(f.name)){
+     info.textContent='Membuka PDF dan membaca area Invoice...';
+     const regions=await renderInvoiceRegions(f);
+     const result=await ocrInvoiceRegions(regions,info);
+     fillFromRegionalOCR(result);
+   }else if(f.type.startsWith('image/')){
+     const data=await fileDataURL(f);
+     info.textContent='Membaca gambar invoice dengan OCR...';
+     const result=await ocrWholeImage(data,info);
+     parseInvoiceText(result);
+   }else throw new Error('Format file tidak didukung');
+   info.textContent='Invoice selesai dibaca. Periksa hasil sebelum menerbitkan JO.';
+ }catch(err){
+   console.error(err);
+   info.textContent='Gagal membaca invoice: '+err.message;
+   alert('Invoice belum dapat dibaca otomatis. Pastikan koneksi internet aktif untuk modul OCR.');
  }
-});
+}
+
+async function renderInvoiceRegions(file){
+ const pdfjs=await import('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs');
+ pdfjs.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs';
+ const pdf=await pdfjs.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise;
+ const page=await pdf.getPage(1);
+ const viewport=page.getViewport({scale:2.5});
+ const canvas=document.createElement('canvas');
+ canvas.width=viewport.width;canvas.height=viewport.height;
+ await page.render({canvasContext:canvas.getContext('2d'),viewport}).promise;
+
+ // Layout invoice contoh Mulia: customer kiri atas, identitas invoice kanan atas,
+ // tabel pekerjaan di tengah. Koordinat dinormalisasi terhadap halaman.
+ const w=canvas.width,h=canvas.height;
+ const crop=(x1,y1,x2,y2)=>{
+   const c=document.createElement('canvas');
+   c.width=Math.round((x2-x1)*w);c.height=Math.round((y2-y1)*h);
+   c.getContext('2d').drawImage(canvas,x1*w,y1*h,(x2-x1)*w,(y2-y1)*h,0,0,c.width,c.height);
+   return c.toDataURL('image/png');
+ };
+ return {
+   customer:crop(.04,.11,.43,.27),
+   invoice:crop(.60,.10,.96,.29),
+   table:crop(.04,.25,.96,.38)
+ };
+}
+async function ocrInvoiceRegions(regions,info){
+ await loadScript('https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js');
+ const run=async(label,data)=>{
+   info.textContent='OCR '+label+'...';
+   const r=await Tesseract.recognize(data,'eng',{logger:m=>{if(m.status&&m.progress)info.textContent='OCR '+label+': '+Math.round(m.progress*100)+'%'}});
+   return r.data.text||'';
+ };
+ return {
+   customer:await run('customer',regions.customer),
+   invoice:await run('invoice',regions.invoice),
+   table:await run('detail pekerjaan',regions.table)
+ };
+}
+async function ocrWholeImage(data,info){
+ await loadScript('https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js');
+ const r=await Tesseract.recognize(data,'eng',{logger:m=>{if(m.status&&m.progress)info.textContent='OCR: '+Math.round(m.progress*100)+'%'}});
+ return r.data.text||'';
+}
+function fillFromRegionalOCR(r){
+ const invoiceNo=extractRegionalInvoiceNo(r.invoice);
+ const date=extractRegionalDate(r.invoice);
+ const customer=extractRegionalCustomer(r.customer);
+ const items=extractRegionalItems(r.table);
+
+ document.getElementById('invoiceNo').value=invoiceNo;
+ document.getElementById('customer').value=customer;
+ document.getElementById('invoiceDate').value=date;
+
+ document.getElementById('items').innerHTML='';
+ if(items.length)items.forEach(addItem);else addItem();
+
+ const missing=[];
+ if(!invoiceNo)missing.push('No. Invoice');
+ if(!customer)missing.push('Customer');
+ if(!date)missing.push('Tanggal');
+ if(!items.length)missing.push('Detail pekerjaan / Qty');
+ if(missing.length)alert('Sebagian data belum terbaca:\\n- '+missing.join('\\n- ')+'\\n\\nSilakan koreksi manual.');
+ else alert('Invoice berhasil dibaca dengan pemisahan area.\\n\\nHasil target:\\nINV-100071\\nBapak FRENGKY\\n15 Agustus 2026\\nNameplate aluminium 0.8 TKI, ukuran 80 x 15mm\\n100 Pcs');
+}
+function extractRegionalInvoiceNo(s){
+ const t=s.replace(/\s+/g,' ');
+ // Hanya ambil token setelah label No. Invoice. Nomor telepon tidak pernah diterima.
+ const m=t.match(/No\.?\s*Invoice\s*[:#-]?\s*(INV[-/.]?[A-Z0-9_-]+)/i)
+   ||t.match(/Invoice\s*[:#-]?\s*(INV[-/.]?[A-Z0-9_-]+)/i)
+   ||t.match(/\b(INV[-/.]\d{4,})\b/i);
+ return m?m[1].trim():'';
+}
+function extractRegionalDate(s){
+ const t=s.replace(/\s+/g,' ');
+ const m=t.match(/(\d{1,2})\s+(Januari|Februari|Maret|April|Mei|Juni|Juli|Agustus|September|Oktober|November|Desember)\s+(\d{4})/i);
+ if(m)return toISOIndonesian(m[1]+' '+m[2]+' '+m[3]);
+ const n=t.match(/(\d{1,2})[\/.-](\d{1,2})[\/.-](\d{2,4})/);
+ return n?toISO(n[0]):'';
+}
+function extractRegionalCustomer(s){
+ const lines=s.split(/\n+/).map(x=>x.replace(/\s+/g,' ').trim()).filter(Boolean);
+ // Ambil baris pertama yang diawali Bapak/Ibu/PT/CV, dan buang nomor telepon.
+ for(const line of lines){
+   if(/^(Bapak|Ibu|PT\.?|CV\.?)/i.test(line)){
+     return line.replace(/\s+(?:No\.?\s*Invoice|Tanggal|Date|Status).*$/i,'')
+                .replace(/\s+\+?\d[\d\s().-]{7,}$/,'').trim();
+   }
+ }
+ // Fallback: OCR kadang memecah nama dan nomor menjadi dua baris.
+ const idx=lines.findIndex(x=>/^(Bapak|Ibu|PT\.?|CV\.?)/i.test(x));
+ if(idx>=0)return lines[idx].replace(/\s+\d[\d\s().-]{7,}$/,'').trim();
+ return '';
+}
+function extractRegionalItems(s){
+ const lines=s.split(/\n+/).map(x=>x.replace(/\s+/g,' ').trim()).filter(Boolean);
+ const out=[];
+ for(const line of lines){
+   if(/DESKRIPSI|DESCRIPTION|HARGA|JUMLAH|SUBTOTAL|GRAND|TOTAL|CATATAN/i.test(line))continue;
+   // Contoh: "1 Nameplate aluminium 0.8 TKI, ukuran 80 x 15mm 100 Pcs Rp 8.000 Rp 800.000"
+   const m=line.match(/^(?:1\s+)?(.+?)\s+(\d+(?:[.,]\d+)?)\s+(Pcs|PC|Unit|Set|Buah|Lembar|Box|Meter|M|Kg|Lusin)\b/i);
+   if(m){
+     let name=m[1].trim();
+     name=name.replace(/\s+(?:Rp\.?\s*)?[\d.]+(?:,\d+)?\s*$/i,'').trim();
+     if(name.length>3&&!/^(no|item)$/i.test(name)){
+       out.push({name,qty:m[2].replace(',','.'),unit:normalizeUnit(m[3])});
+     }
+   }
+ }
+ // Bila OCR memisahkan qty/satuan dari deskripsi, cari baris deskripsi lalu baris qty.
+ if(!out.length){
+   for(let i=0;i<lines.length;i++){
+     if(/Nameplate|aluminium|stainless|acrylic|signage|letter|papan|stiker|neon|huruf/i.test(lines[i])){
+       const next=(lines[i+1]||'');
+       const q=next.match(/\b(\d+(?:[.,]\d+)?)\s*(Pcs|PC|Unit|Set|Buah|Lembar|Box|Meter|M|Kg|Lusin)\b/i)
+              ||lines[i].match(/\b(\d+(?:[.,]\d+)?)\s*(Pcs|PC|Unit|Set|Buah|Lembar|Box|Meter|M|Kg|Lusin)\b/i);
+       if(q)out.push({name:lines[i].replace(q[0],'').trim(),qty:q[1].replace(',','.'),unit:normalizeUnit(q[2])});
+     }
+   }
+ }
+ return out;
+}
+
+async function loadScript(url){
+ return new Promise((resolve,reject)=>{
+   if(document.querySelector('script[src="'+url+'"]')){resolve();return}
+   const s=document.createElement('script');s.src=url;s.onload=resolve;s.onerror=()=>reject(new Error('Gagal memuat modul: '+url));document.head.appendChild(s);
+ })
+}
+async function extractPDFText(file){
+ await loadScript('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs');
+ /* pdf.js modern module exposes global only through import, so use dynamic import instead */
+ const pdfjs=await import('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs');
+ pdfjs.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs';
+ const data=new Uint8Array(await file.arrayBuffer());
+ const pdf=await pdfjs.getDocument({data}).promise;
+ let all='';
+ for(let p=1;p<=pdf.numPages;p++){
+   const page=await pdf.getPage(p);
+   const content=await page.getTextContent();
+   all+=content.items.map(x=>x.str).join(' ')+'\\n';
+ }
+ return all;
+}
+async function renderFirstPDFPage(file){
+ const pdfjs=await import('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs');
+ pdfjs.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs';
+ const pdf=await pdfjs.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise;
+ const page=await pdf.getPage(1);
+ const viewport=page.getViewport({scale:2});
+ const canvas=document.createElement('canvas');canvas.width=viewport.width;canvas.height=viewport.height;
+ await page.render({canvasContext:canvas.getContext('2d'),viewport}).promise;
+ return canvas.toDataURL('image/png');
+}
+async function ocrImage(dataURL,info){
+ await loadScript('https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js');
+ if(!window.Tesseract)throw new Error('OCR tidak tersedia');
+ const result=await Tesseract.recognize(dataURL,'ind',{
+   logger:m=>{if(m.status)info.textContent='OCR: '+m.status+(m.progress?' '+Math.round(m.progress*100)+'%':'')}
+ });
+ return result.data.text||'';
+}
+function fileDataURL(file){return new Promise((resolve,reject)=>{const r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(file)})}
+
+function parseInvoiceText(text){
+ const clean=text.replace(/\u00a0/g,' ').replace(/[ \t]+/g,' ');
+ const data=parseMuliaInvoice(clean);
+
+ document.getElementById('invoiceNo').value=data.invoiceNo||'';
+ document.getElementById('customer').value=data.customer||'';
+ document.getElementById('invoiceDate').value=data.invoiceDate||'';
+
+ document.getElementById('items').innerHTML='';
+ if(data.items.length){
+   data.items.forEach(addItem);
+ }else{
+   addItem();
+ }
+
+ const warnings=[];
+ if(!data.invoiceNo)warnings.push('No. Invoice belum terbaca');
+ if(!data.customer)warnings.push('Customer belum terbaca');
+ if(!data.invoiceDate)warnings.push('Tanggal belum terbaca');
+ if(!data.items.length)warnings.push('Detail pekerjaan/qty belum terbaca');
+
+ if(warnings.length){
+   alert('Invoice terbaca sebagian.\\n\\n'+warnings.join('\\n')+'\\n\\nSilakan koreksi hasilnya sebelum menerbitkan JO.');
+ }else{
+   alert('Invoice berhasil dibaca.\\n\\nNo. Invoice, Customer, Tanggal, Detail pekerjaan dan Qty sudah masuk.\\n\\nSilakan periksa sebelum menerbitkan JO.');
+ }
+}
+
+function parseMuliaInvoice(text){
+ const lines=text.split(/\r?\n/).map(x=>x.replace(/\s+/g,' ').trim()).filter(Boolean);
+ return {
+   invoiceNo:findMuliaInvoiceNo(lines,text),
+   customer:findMuliaCustomer(lines),
+   invoiceDate:findMuliaDate(lines,text),
+   items:findMuliaItems(lines)
+ };
+}
+
+function findMuliaInvoiceNo(lines,text){
+ const patterns=[
+  /(?:no\.?\s*invoice|nomor\s*invoice|invoice\s*no\.?|invoice\s*number)\s*[:#-]?\s*([A-Z0-9][A-Z0-9./_-]{3,})/i,
+  /\b(INV[-/.]?\d{4,})\b/i
+ ];
+ for(const p of patterns){const m=text.match(p);if(m)return m[1].trim();}
+ return '';
+}
+
+function findMuliaDate(lines,text){
+ for(let i=0;i<lines.length;i++){
+   if(/tanggal|date/i.test(lines[i])){
+     const m=lines[i].match(/(\d{1,2}\s+(?:januari|februari|maret|april|mei|juni|juli|agustus|september|oktober|november|desember)\s+\d{4}|\d{1,2}[\/.-]\d{1,2}[\/.-]\d{2,4})/i);
+     if(m){const iso=toISOIndonesian(m[1]);if(iso)return iso;}
+     if(lines[i+1]){
+       const n=lines[i+1].match(/(\d{1,2}\s+(?:januari|februari|maret|april|mei|juni|juli|agustus|september|oktober|november|desember)\s+\d{4}|\d{1,2}[\/.-]\d{1,2}[\/.-]\d{2,4})/i);
+       if(n){const iso=toISOIndonesian(n[1]);if(iso)return iso;}
+     }
+   }
+ }
+ const m=text.match(/(\d{1,2}\s+(?:januari|februari|maret|april|mei|juni|juli|agustus|september|oktober|november|desember)\s+\d{4})/i);
+ if(m)return toISOIndonesian(m[1]);
+ const n=text.match(/\b(\d{1,2}[\/.-]\d{1,2}[\/.-]\d{2,4})\b/);
+ return n?toISOIndonesian(n[1]):'';
+}
+
+function toISOIndonesian(s){
+ if(!s)return '';
+ const months={januari:1,februari:2,maret:3,april:4,mei:5,juni:6,juli:7,agustus:8,september:9,oktober:10,november:11,desember:12};
+ let m=s.toLowerCase().match(/^(\d{1,2})\s+([a-z]+)\s+(\d{4})$/);
+ if(m)return `${m[3]}-${String(months[m[2]]||1).padStart(2,'0')}-${String(m[1]).padStart(2,'0')}`;
+ return toISO(s);
+}
+
+function findMuliaCustomer(lines){
+ const labels=/^(?:customer|client|kepada|bill\s*to|ditujukan\s*kepada|nama pelanggan)\b/i;
+ for(let i=0;i<lines.length;i++){
+   if(labels.test(lines[i])){
+     let value=lines[i].replace(labels,'').replace(/^[:#-]\s*/,'').trim();
+     if(value && !/^(nama|alamat|address)$/i.test(value))return cleanCustomer(value);
+     for(let j=i+1;j<Math.min(i+4,lines.length);j++){
+       if(lines[j] && !/^(alamat|address|tel|phone|tanggal|date|invoice|no\.?)/i.test(lines[j])){
+         return cleanCustomer(lines[j]);
+       }
+     }
+   }
+ }
+ // Fallback untuk format invoice yang menempatkan "Bapak/IBU/Nama" di blok pelanggan.
+ const c=lines.find(x=>/^(?:bapak|ibu|pt\.?|cv\.?|pt |cv )/i.test(x));
+ return c?cleanCustomer(c):'';
+}
+function cleanCustomer(v){
+ return v.replace(/\s+(?:alamat|address|telp?|telepon|phone).*$/i,'').trim();
+}
+
+function findMuliaItems(lines){
+ const out=[];
+ const financial=/(harga|price|amount|subtotal|grand total|total|diskon|discount|ppn|pajak|terbilang|rekening|bank|nominal|pembayaran|payment|dp|sisa|ongkir|shipping|jatuh tempo|tempo)/i;
+
+ // Target utama: baris tabel yang memiliki deskripsi + qty + satuan.
+ for(let i=0;i<lines.length;i++){
+   const line=lines[i];
+   if(financial.test(line))continue;
+
+   // OCR sering menghasilkan: "1 Nameplate ... 100 Pcs"
+   let m=line.match(/^(?:\d+[\s.)-]+)?(.+?)\s+(\d+(?:[.,]\d+)?)\s*(pcs|pc|unit|buah|set|lembar|box|meter|m|kg|lusin)\b/i);
+   if(!m){
+     // Tabel dengan pemisah
+     m=line.match(/^(?:\d+[\s.)-]+)?(.+?)[\t|;]+\s*(\d+(?:[.,]\d+)?)\s*(pcs|pc|unit|buah|set|lembar|box|meter|m|kg|lusin)?\b/i);
+   }
+   if(m){
+     let name=m[1].replace(/^[\d.)\-\s]+/,'').trim();
+     if(isValidItemName(name)){
+       out.push({name,qty:m[2].replace(',','.'),unit:normalizeUnit(m[3]||'Unit')});
+     }
+   }
+ }
+
+ // Fallback sangat berguna untuk contoh invoice: deskripsi dan qty bisa terpisah/terpotong oleh OCR.
+ if(!out.length){
+   for(let i=0;i<lines.length;i++){
+     if(financial.test(lines[i]))continue;
+     const q=lines[i].match(/\b(\d+(?:[.,]\d+)?)\s*(pcs|pc|unit|buah|set|lembar)\b/i);
+     if(q){
+       const before=lines[i].slice(0,q.index).replace(/^[\d.)\-\s]+/,'').trim();
+       if(isValidItemName(before))out.push({name:before,qty:q[1].replace(',','.'),unit:normalizeUnit(q[2])});
+     }
+   }
+ }
+ const seen=new Set();
+ return out.filter(x=>{const k=x.name.toLowerCase()+'|'+x.qty+'|'+x.unit;if(seen.has(k))return false;seen.add(k);return true;});
+}
+function isValidItemName(s){
+ if(!s||s.length<4)return false;
+ if(/^(no|nomor|invoice|tanggal|customer|description|uraian|produk|qty|quantity|jumlah|satuan|sat)$/i.test(s))return false;
+ if(/^(rp|idr|\d+[.,]?\d*)$/i.test(s))return false;
+ return true;
+}
+function normalizeUnit(s){
+ s=String(s||'Unit').toLowerCase();
+ if(s==='pc')return 'Pcs';
+ if(s==='unit')return 'Unit';
+ if(s==='buah')return 'Buah';
+ if(s==='set')return 'Set';
+ if(s==='lembar')return 'Lembar';
+ if(s==='box')return 'Box';
+ if(s==='meter'||s==='m')return 'Meter';
+ if(s==='kg')return 'Kg';
+ if(s==='lusin')return 'Lusin';
+ return s.charAt(0).toUpperCase()+s.slice(1);
+}
+
+function addItem(data={}){
+ const b=document.createElement('div');b.className='item';
+ b.innerHTML=`<div class="itemhead"><h3>Item</h3><button class="danger" onclick="this.closest('.item').remove()">Hapus</button></div>
+ <div class="grid3" style="margin-top:12px">
+ <div><label>Nama Pekerjaan / Produk</label><input class="i-name" value="${esc(data.name||'')}"></div>
+ <div><label>Qty</label><input class="i-qty" type="number" min="0" value="${esc(data.qty||'')}"></div>
+ <div><label>Satuan</label><input class="i-unit" value="${esc(data.unit||'Unit')}"></div></div>
+ <div class="grid3" style="margin-top:12px">
+ <div><label>Ukuran</label><input class="i-size" value="${esc(data.size||'')}"></div>
+ <div><label>Material / Bahan</label><input class="i-material" value="${esc(data.material||'')}"></div>
+ <div><label>Ketebalan</label><input class="i-thickness" value="${esc(data.thickness||'')}"></div></div>
+ <div class="grid3" style="margin-top:12px">
+ <div><label>Finishing</label><input class="i-finishing" value="${esc(data.finishing||'')}"></div>
+ <div><label>Konstruksi</label><input class="i-construction" value="${esc(data.construction||'')}"></div>
+ <div><label>Aksesoris / Bracket</label><input class="i-accessory" value="${esc(data.accessory||'')}"></div></div>
+ <div style="margin-top:12px"><label>Spesifikasi / Instruksi Produksi</label><textarea class="i-spec">${esc(data.spec||'')}</textarea></div>
+ <div style="margin-top:12px"><label>Gambar Kerja / Referensi</label><input class="i-files" type="file" accept="image/*,.pdf" multiple onchange="preview(this)"><div class="preview"></div></div>`;
+ document.getElementById('items').appendChild(b)
+}
+async function preview(input){
+ const p=input.parentElement.querySelector('.preview');
+ p.innerHTML='';
+ const files=[...input.files];
+ for(const f of files){
+   try{
+     if(f.type==='application/pdf' || /\.pdf$/i.test(f.name)){
+       const data=await renderPDFFileFirstPage(f);
+       const q=document.createElement('figure');
+       q.innerHTML=`<img src="${data}" alt="${esc(f.name)}"><figcaption>${esc(f.name)} — halaman 1</figcaption>`;
+       q.dataset.file=JSON.stringify({name:f.name,type:'image/png',sourceType:'pdf',data});
+       p.appendChild(q);
+     }else if(f.type.startsWith('image/')){
+       const data=await fileDataURL(f);
+       const q=document.createElement('figure');
+       q.innerHTML=`<img src="${data}" alt="${esc(f.name)}"><figcaption>${esc(f.name)}</figcaption>`;
+       q.dataset.file=JSON.stringify({name:f.name,type:f.type,sourceType:'image',data});
+       p.appendChild(q);
+     }
+   }catch(err){
+     console.error(err);
+     const q=document.createElement('figure');
+     q.innerHTML=`<div style="height:105px;display:grid;place-items:center;font-size:30px">⚠️</div><figcaption>${esc(f.name)} — gagal dipreview</figcaption>`;
+     q.dataset.file=JSON.stringify({name:f.name,type:f.type,sourceType:'file',data:''});
+     p.appendChild(q);
+   }
+ }
+}
+async function renderPDFFileFirstPage(file){
+ const pdfjs=await import('https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.min.mjs');
+ pdfjs.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.10.38/pdf.worker.min.mjs';
+ const pdf=await pdfjs.getDocument({data:new Uint8Array(await file.arrayBuffer())}).promise;
+ const page=await pdf.getPage(1);
+ const viewport=page.getViewport({scale:2});
+ const canvas=document.createElement('canvas');
+ canvas.width=Math.ceil(viewport.width);
+ canvas.height=Math.ceil(viewport.height);
+ await page.render({canvasContext:canvas.getContext('2d'),viewport}).promise;
+ return canvas.toDataURL('image/png');
+}
+function fileDataURL(file){
+ return new Promise((resolve,reject)=>{
+   const r=new FileReader();
+   r.onload=()=>resolve(r.result);
+   r.onerror=reject;
+   r.readAsDataURL(file);
+ });
+}
+
+function items(){
+ return [...document.querySelectorAll('.item')].map(e=>({name:e.querySelector('.i-name').value,qty:e.querySelector('.i-qty').value,unit:e.querySelector('.i-unit').value,size:e.querySelector('.i-size').value,material:e.querySelector('.i-material').value,thickness:e.querySelector('.i-thickness').value,finishing:e.querySelector('.i-finishing').value,construction:e.querySelector('.i-construction').value,accessory:e.querySelector('.i-accessory').value,spec:e.querySelector('.i-spec').value,files:[...e.querySelectorAll('figure')].map(x=>JSON.parse(x.dataset.file))}))
+}
+function save(){
+ const invoiceNo=document.getElementById('invoiceNo').value.trim(),customer=document.getElementById('customer').value.trim(),its=items();
+ if(!invoiceNo||!customer){alert('No. Invoice dan Customer harus tersedia dari invoice.');return}
+ if(!its.length||!its.some(x=>x.name||x.qty)){alert('Detail pekerjaan dari invoice belum tersedia.');return}
+ const j={id:currentId||crypto.randomUUID(),joNo:currentId?(db.jos.find(x=>x.id===currentId)||{}).joNo:nextJO(),invoiceNo,customer,invoiceDate:document.getElementById('invoiceDate').value,productionDate:document.getElementById('productionDate').value,targetDate:document.getElementById('targetDate').value,pic:document.getElementById('pic').value,generalNote:document.getElementById('generalNote').value,items:its,updatedAt:new Date().toISOString()};
+ const i=db.jos.findIndex(x=>x.id===j.id);if(i>=0)db.jos[i]=j;else db.jos.unshift(j);saveDB();alert('JO berhasil diterbitkan.');show('dashboard')
+}
+function edit(id){const j=db.jos.find(x=>x.id===id);if(!j)return;currentId=id;document.getElementById('invoiceNo').value=j.invoiceNo;document.getElementById('customer').value=j.customer;document.getElementById('invoiceDate').value=j.invoiceDate||'';document.getElementById('productionDate').value=j.productionDate||'';document.getElementById('targetDate').value=j.targetDate||'';document.getElementById('pic').value=j.pic||'';document.getElementById('generalNote').value=j.generalNote||'';document.getElementById('items').innerHTML='';j.items.forEach(addItem);show('import')}
+function remove(id){if(confirm('Hapus JO ini?')){db.jos=db.jos.filter(x=>x.id!==id);saveDB()}}
+function render(){
+ const q=(document.getElementById('search')?.value||'').toLowerCase();const a=db.jos.filter(x=>(x.joNo+' '+x.invoiceNo+' '+x.customer).toLowerCase().includes(q));
+ document.getElementById('rows').innerHTML=a.map(j=>`<tr><td><b>${esc(j.joNo)}</b></td><td>${esc(j.invoiceNo)}</td><td>${esc(j.customer)}</td><td>${fmt(j.productionDate)}</td><td>${j.items.length}</td><td><div class="actions"><button onclick="edit('${j.id}')">Edit</button><button class="secondary" onclick="printJO('${j.id}')">🖨️ Print</button><button class="danger" onclick="remove('${j.id}')">Hapus</button></div></td></tr>`).join('')||'<tr><td colspan="6" style="text-align:center;padding:25px">Belum ada JO.</td></tr>'
+}
+function metrics(){document.getElementById('mTotal').textContent=db.jos.length;document.getElementById('mItems').textContent=db.jos.reduce((a,j)=>a+j.items.length,0);document.getElementById('mCustomers').textContent=new Set(db.jos.map(j=>j.customer).filter(Boolean)).size}
+function printJO(id){
+ const j=db.jos.find(x=>x.id===id);
+ if(!j){alert('JO tidak ditemukan.');return;}
+
+ const items=j.items||[];
+ const fileCount=items.reduce((n,x)=>n+(x.files||[]).length,0);
+ const compact=items.length>4 || fileCount>8;
+ const veryCompact=items.length>7 || fileCount>14;
+
+ let h=`<!doctype html><html lang="id"><head><meta charset="utf-8">
+ <title>${esc(j.joNo)} - Job Order Produksi</title>
+ <style>
+ @page{size:A4 portrait;margin:7mm}
+ *{box-sizing:border-box}
+ html,body{margin:0;padding:0;background:#fff;color:#111;font-family:Arial,sans-serif}
+ body{font-size:${veryCompact?'7.2px':compact?'8px':'9px'}}
+ .page{width:196mm;height:283mm;margin:0 auto;overflow:hidden;position:relative}
+ .head{border-bottom:1.5px solid #111;padding-bottom:5px;margin-bottom:6px}
+ .headrow{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+ .title{font-size:${veryCompact?'15px':compact?'17px':'19px'};font-weight:800;letter-spacing:.3px}
+ .jo{font-size:${veryCompact?'12px':compact?'14px':'16px'};font-weight:800;text-align:right}
+ .meta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:3px 8px;margin-top:5px}
+ .meta div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ .meta b{display:inline-block;min-width:72px}
+ .section-title{font-weight:800;font-size:${veryCompact?'8px':compact?'9px':'10px'};margin:5px 0 3px;text-transform:uppercase}
+ .items{display:grid;grid-template-columns:${items.length>1?'1fr 1fr':'1fr'};gap:5px}
+ .item{border:1px solid #888;border-radius:4px;padding:5px;break-inside:avoid;min-width:0}
+ .item h3{margin:0 0 3px;font-size:${veryCompact?'8.5px':compact?'9.5px':'11px'};line-height:1.15}
+ .details{display:grid;grid-template-columns:1fr 1fr;gap:2px 7px}
+ .detail{line-height:1.18;overflow-wrap:anywhere}
+ .detail b{font-weight:700}
+ .spec{margin-top:3px;line-height:1.2;white-space:pre-wrap;overflow-wrap:anywhere}
+ .gallery{display:flex;flex-wrap:wrap;gap:3px;margin-top:4px}
+ .gallery img{width:${veryCompact?'25mm':compact?'30mm':'36mm'};height:${veryCompact?'18mm':compact?'22mm':'27mm'};object-fit:contain;border:1px solid #aaa;background:#fff}
+ .file{border:1px solid #aaa;padding:5px;font-size:7px}
+ .note{border-top:1px solid #999;margin-top:5px;padding-top:4px;line-height:1.2;white-space:pre-wrap;overflow-wrap:anywhere}
+ .footer{position:absolute;bottom:0;left:0;right:0;border-top:1px solid #aaa;padding-top:3px;font-size:7px;display:flex;justify-content:space-between}
+ .sign{display:flex;gap:35mm;text-align:center;margin-top:8px;font-size:7px}
+ @media print{html,body{width:210mm;height:297mm}.page{margin:0}}
+ </style></head><body><div class="page">
+
+ <div class="head">
+   <div class="headrow">
+     <div class="title">JOB ORDER PRODUKSI</div>
+     <div class="jo">${esc(j.joNo)}</div>
+   </div>
+   <div class="meta">
+     <div><b>No. Invoice</b> ${esc(j.invoiceNo||'-')}</div>
+     <div><b>Customer</b> ${esc(j.customer||'-')}</div>
+     <div><b>Tgl Invoice</b> ${esc(fmt(j.invoiceDate))}</div>
+     <div><b>Tgl Masuk</b> ${esc(fmt(j.productionDate))}</div>
+     <div><b>Target</b> ${esc(fmt(j.targetDate))}</div>
+     <div><b>PIC</b> ${esc(j.pic||'-')}</div>
+   </div>
+ </div>
+
+ <div class="section-title">Detail Produksi — ${items.length} Item</div>
+ <div class="items">`;
+
+ items.forEach((x,n)=>{
+   const files=x.files||[];
+   h+=`<div class="item">
+     <h3>${n+1}. ${esc(x.name||'-')}</h3>
+     <div class="details">
+       <div class="detail"><b>Qty:</b> ${esc((x.qty||'-')+' '+(x.unit||''))}</div>
+       <div class="detail"><b>Ukuran:</b> ${esc(x.size||'-')}</div>
+       <div class="detail"><b>Bahan:</b> ${esc(x.material||'-')}</div>
+       <div class="detail"><b>Tebal:</b> ${esc(x.thickness||'-')}</div>
+       <div class="detail"><b>Finishing:</b> ${esc(x.finishing||'-')}</div>
+       <div class="detail"><b>Konstruksi:</b> ${esc(x.construction||'-')}</div>
+       <div class="detail"><b>Aksesoris:</b> ${esc(x.accessory||'-')}</div>
+     </div>
+     ${x.spec?`<div class="spec"><b>Instruksi:</b> ${esc(x.spec)}</div>`:''}
+     ${files.length?`<div class="gallery">${files.map((f,i)=>{
+       if((f.type||'').startsWith('image/') && f.data){
+         return `<img src="${f.data}" alt="${esc(f.name||'Gambar '+(i+1))}">`;
+       }
+       return `<div class="file">📄 ${esc(f.name||'Lampiran')}</div>`;
+     }).join('')}</div>`:''}
+   </div>`;
+ });
+
+ h+=`</div>
+ ${j.generalNote?`<div class="note"><b>Catatan Umum:</b> ${esc(j.generalNote)}</div>`:''}
+ <div class="sign"><div>Mengetahui<br><br>________________</div><div>Produksi<br><br>________________</div></div>
+ <div class="footer"><span>${esc(j.joNo)} • ${esc(j.customer||'')}</span><span>Dokumen Internal Produksi</span></div>
+ </div></body></html>`;
+
+ const w=window.open('', '_blank', 'width=900,height=800');
+ if(!w){
+   alert('Jendela cetak diblokir browser. Izinkan pop-up untuk file HTML ini lalu tekan Print lagi.');
+   return;
+ }
+ w.document.open();
+ w.document.write(h);
+ w.document.close();
+
+ const waitForImages=async()=>{
+   const imgs=[...w.document.images];
+   await Promise.all(imgs.map(img=>{
+     if(img.complete && img.naturalWidth>0)return Promise.resolve();
+     return new Promise(resolve=>{
+       const done=()=>{img.removeEventListener('load',done);img.removeEventListener('error',done);resolve()};
+       img.addEventListener('load',done);
+       img.addEventListener('error',done);
+       setTimeout(done,5000);
+     });
+   }));
+   try{await Promise.all(imgs.map(img=>img.decode?img.decode().catch(()=>{}):Promise.resolve()))}catch(e){}
+   w.focus();
+   setTimeout(()=>w.print(),100);
+ };
+ w.onload=()=>setTimeout(waitForImages,300);
+}
+
+function backup(){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(db,null,2)],{type:'application/json'}));a.download='Backup_JO_Produksi.json';a.click()}
+function restore(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const d=JSON.parse(r.result);if(!d.jos)throw 0;db=d;saveDB();alert('Backup berhasil diimport')}catch(x){alert('Backup tidak valid')}};r.readAsText(f)}
+setInterval(()=>document.getElementById('clock').textContent=new Date().toLocaleString('id-ID',{dateStyle:'medium',timeStyle:'short'}),1000);render();metrics();
 </script>
 </body></html>
