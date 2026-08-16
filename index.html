@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Mulia Group — JO Produksi</title>
+<style>
+:root{--bg:#f4f6f8;--card:#fff;--ink:#17202a;--muted:#68727d;--line:#dfe4e8;--accent:#111827;--ok:#15803d;--warn:#b45309;--blue:#2563eb;--danger:#b91c1c}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:var(--bg);color:var(--ink)}
+button,input,select,textarea{font:inherit}button{cursor:pointer;border:0;border-radius:8px;padding:10px 14px;font-weight:700}
+.btn{background:var(--accent);color:#fff}.btn.secondary{background:#fff;color:var(--ink);border:1px solid var(--line)}.btn.ok{background:var(--ok)}.btn.blue{background:var(--blue)}.btn.danger{background:var(--danger)}
+header{background:#111827;color:#fff;padding:14px 22px;display:flex;justify-content:space-between;align-items:center;gap:12px;position:sticky;top:0;z-index:10}
+.brand{font-weight:800}.brand small{display:block;font-weight:400;opacity:.7;margin-top:3px}
+main{max-width:1250px;margin:auto;padding:20px}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:15px}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:15px}.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px}.num{font-size:25px;font-weight:800}.muted{color:var(--muted);font-size:12px}
+.filters{display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px;margin-bottom:12px}input,select,textarea{width:100%;border:1px solid var(--line);border-radius:8px;padding:9px;background:#fff}textarea{min-height:70px;resize:vertical}
+.tablewrap{overflow:auto;background:#fff;border:1px solid var(--line);border-radius:12px}.table{width:100%;border-collapse:collapse;min-width:800px}.table th,.table td{padding:10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}.table th{background:#f8fafc;font-size:12px}.pill{display:inline-block;padding:4px 8px;border-radius:99px;background:#eef2ff;font-size:11px;font-weight:700}.progress{height:8px;background:#e5e7eb;border-radius:99px;overflow:hidden}.progress>i{display:block;height:100%;background:#2563eb}
+.modal{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;padding:15px;z-index:50}.modal.show{display:flex}.modalbox{background:#fff;width:min(1000px,100%);max-height:92vh;overflow:auto;border-radius:14px;padding:18px}.modalhead{display:flex;justify-content:space-between;align-items:center;gap:10px;border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:12px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.field label{display:block;font-size:12px;font-weight:700;margin:0 0 5px}.item{border:1px solid var(--line);border-radius:10px;padding:12px;margin-top:10px}.itemhead{display:flex;justify-content:space-between;gap:8px}.stage{display:grid;grid-template-columns:1fr auto;gap:7px;align-items:center;border:1px solid var(--line);border-radius:8px;padding:8px;margin-top:7px}.stage.done{border-color:#bbf7d0;background:#f0fdf4}.stage.current{border-color:#bfdbfe;background:#eff6ff}.photos{display:flex;gap:7px;flex-wrap:wrap;margin-top:8px}.photos img{width:95px;height:70px;object-fit:cover;border:1px solid #bbb;border-radius:6px}.timeline{border-left:2px solid #dbeafe;margin:10px 0 0 6px;padding-left:14px}.event{margin-bottom:10px}.event b{font-size:12px}.event small{color:var(--muted)}
+.hidden{display:none!important}.empty{padding:30px;text-align:center;color:var(--muted)}
+@media(max-width:800px){.cards{grid-template-columns:1fr 1fr}.filters,.grid2,.grid3{grid-template-columns:1fr}header{align-items:flex-start;flex-direction:column}}
+@media print{header,.toolbar,.filters,.no-print{display:none!important}body{background:#fff}.modal{position:static;background:#fff;padding:0}.modalbox{max-height:none;box-shadow:none;width:100%;padding:0}.printable{display:block!important}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">MULIA GROUP — JOB ORDER PRODUKSI<small>Production Tracking • V9</small></div>
+  <div id="userBadge">PIC: -</div>
+</header>
+<main>
+  <div class="toolbar">
+    <button class="btn" onclick="newJO()">＋ JO Baru</button>
+    <button class="btn blue" onclick="openImport()">Upload Invoice</button>
+    <button class="btn secondary" onclick="syncDrive()">☁ Sinkron Drive</button>
+    <button class="btn secondary" onclick="exportJSON()">JSON Backup</button>
+    <label class="btn secondary" style="display:inline-block">Import JSON<input id="jsonFile" type="file" accept=".json" hidden onchange="importJSON(event)"></label>
+    <button class="btn secondary" onclick="window.print()">🖨️ Print</button>
+  </div>
+  <div class="cards">
+    <div class="card"><div class="muted">JO Saya</div><div class="num" id="cMine">0</div></div>
+    <div class="card"><div class="muted">Belum Selesai</div><div class="num" id="cOpen">0</div></div>
+    <div class="card"><div class="muted">Sedang Produksi</div><div class="num" id="cProgress">0</div></div>
+    <div class="card"><div class="muted">Selesai</div><div class="num" id="cDone">0</div></div>
+  </div>
+  <div class="filters">
+    <input id="search" placeholder="Cari JO / invoice / customer..." oninput="render()">
+    <select id="picFilter" onchange="render()"><option value="">Semua PIC</option></select>
+    <select id="stageFilter" onchange="render()"><option value="">Semua progress</option><option value="open">Belum selesai</option><option value="progress">Sedang produksi</option><option value="done">Selesai</option></select>
+  </div>
+  <div class="tablewrap">
+    <table class="table"><thead><tr><th>JO</th><th>Invoice / Customer</th><th>PIC</th><th>Progress</th><th>Target</th><th>Aksi</th></tr></thead>
+    <tbody id="rows"></tbody></table>
+  </div>
+</main>
+
+<div class="modal" id="modal"><div class="modalbox" id="modalBox"></div></div>
+
+<script>
+const STAGES=['Film','Cutting / CNC / Laser','Bending','Welding / Assembly','Painting','Finishing','Packing','Pemasangan'];
+const KEY='mulia_jo_v9_demo';
+let db={version:9,users:[{name:'Andre',role:'PIC Produksi'},{name:'Indra',role:'PIC Produksi'}],jos:[]};
+let currentUser=localStorage.getItem('mulia_pic')||'Andre';
+
+function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
+function fmt(s){if(!s)return '-';const d=new Date(s+'T00:00:00');return isNaN(d)?s:d.toLocaleDateString('id-ID',{day:'2-digit',month:'2-digit',year:'numeric'})}
+function uid(p='id'){return p+'_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,7)}
+function save(){localStorage.setItem(KEY,JSON.stringify(db))}
+function load(){try{const x=JSON.parse(localStorage.getItem(KEY)||'null');if(x?.jos)db=x}catch(e){};document.getElementById('userBadge').textContent='PIC: '+currentUser;save()}
+function myJO(j){return j.pic===currentUser}
+function pct(j){const a=j.items||[];if(!a.length)return 0;let n=0,t=a.length*STAGES.length;a.forEach(x=>{const p=x.progress||[];n+=STAGES.filter(s=>p.find(z=>z.stage===s&&z.done)).length});return Math.round(n/t*100)}
+function state(j){const p=pct(j);return p>=100?'done':p>0?'progress':'open'}
+function render(){
+ const q=(document.getElementById('search').value||'').toLowerCase(),pf=document.getElementById('picFilter').value,sf=document.getElementById('stageFilter').value;
+ const all=db.jos.filter(j=>(!q||JSON.stringify(j).toLowerCase().includes(q))&&(!pf||j.pic===pf)&&(!sf||state(j)===sf));
+ document.getElementById('rows').innerHTML=all.length?all.map(j=>{const p=pct(j);return `<tr>
+ <td><b>${esc(j.joNo)}</b><br><span class="pill">${esc(j.items?.length||0)} item</span></td>
+ <td><b>${esc(j.invoiceNo||'-')}</b><br>${esc(j.customer||'-')}</td>
+ <td>${esc(j.pic||'-')}</td>
+ <td><div class="progress"><i style="width:${p}%"></i></div><small>${p}%</small></td>
+ <td>${esc(fmt(j.targetDate))}</td>
+ <td><button class="btn" onclick="openJO('${j.id}')">Buka</button> <button class="btn secondary" onclick="printJO('${j.id}')">🖨</button></td>
+ </tr>`}).join(''):'<tr><td colspan="6" class="empty">Belum ada JO.</td></tr>';
+ document.getElementById('cMine').textContent=db.jos.filter(myJO).length;
+ document.getElementById('cOpen').textContent=db.jos.filter(j=>state(j)==='open').length;
+ document.getElementById('cProgress').textContent=db.jos.filter(j=>state(j)==='progress').length;
+ document.getElementById('cDone').textContent=db.jos.filter(j=>state(j)==='done').length;
+ const sel=document.getElementById('picFilter'),old=sel.value;sel.innerHTML='<option value="">Semua PIC</option>'+db.users.map(u=>`<option>${esc(u.name)}</option>`).join('');sel.value=old;
+}
+function show(content){document.getElementById('modalBox').innerHTML=content;document.getElementById('modal').classList.add('show')}
+function closeModal(){document.getElementById('modal').classList.remove('show')}
+function newJO(){
+ const j={id:uid('jo'),joNo:'JO-'+new Date().getFullYear()+'-'+String(db.jos.length+1).padStart(4,'0'),invoiceNo:'',customer:'',invoiceDate:'',productionDate:new Date().toISOString().slice(0,10),targetDate:'',pic:currentUser,items:[newItem()],generalNote:'',createdAt:new Date().toISOString()};
+ show(editor(j,false))
+}
+function newItem(){return {id:uid('item'),name:'',qty:'',unit:'Pcs',size:'',material:'',thickness:'',finishing:'',construction:'',accessory:'',spec:'',files:[],progress:STAGES.map(stage=>({stage,done:false,updatedAt:'',note:'',photos:[]}))}}
+function editor(j,editing){
+ show(`<div class="modalhead"><h2>${editing?'Edit':'JO Baru'} — ${esc(j.joNo)}</h2><button class="btn secondary" onclick="closeModal()">✕</button></div>
+ <div class="grid3">
+  <div class="field"><label>No. Invoice</label><input id="e_inv" value="${esc(j.invoiceNo)}"></div>
+  <div class="field"><label>Customer</label><input id="e_cus" value="${esc(j.customer)}"></div>
+  <div class="field"><label>Tanggal Invoice</label><input id="e_date" type="date" value="${esc(j.invoiceDate)}"></div>
+  <div class="field"><label>Tanggal Masuk Produksi</label><input id="e_in" type="date" value="${esc(j.productionDate)}"></div>
+  <div class="field"><label>Target Selesai</label><input id="e_target" type="date" value="${esc(j.targetDate)}"></div>
+  <div class="field"><label>PIC Produksi</label><select id="e_pic">${db.users.map(u=>`<option ${u.name===j.pic?'selected':''}>${esc(u.name)}</option>`).join('')}</select></div>
+ </div>
+ <div class="section-title">Detail Produksi</div><div id="editItems">${j.items.map((x,i)=>itemEditor(x,i)).join('')}</div>
+ <button class="btn secondary" onclick="addEditItem()">＋ Tambah Item</button>
+ <div class="field" style="margin-top:10px"><label>Catatan Umum Produksi</label><textarea id="e_note">${esc(j.generalNote)}</textarea></div>
+ <div style="margin-top:14px;display:flex;gap:8px"><button class="btn ok" onclick="saveEditor('${j.id}',${editing})">Simpan JO</button><button class="btn secondary" onclick="closeModal()">Batal</button></div>`);
+}
+function itemEditor(x,i){return `<div class="item" data-item="${i}">
+ <div class="itemhead"><b>ITEM ${i+1}</b>${i?`<button class="btn danger" onclick="this.closest('.item').remove()">Hapus</button>`:''}</div>
+ <div class="grid2">
+  <div class="field"><label>Detail Pekerjaan</label><input data-k="name" value="${esc(x.name)}"></div>
+  <div class="field"><label>Qty</label><input data-k="qty" type="number" value="${esc(x.qty)}"></div>
+  <div class="field"><label>Satuan</label><input data-k="unit" value="${esc(x.unit||'Pcs')}"></div>
+  <div class="field"><label>Ukuran</label><input data-k="size" value="${esc(x.size)}"></div>
+  <div class="field"><label>Material / Bahan</label><input data-k="material" value="${esc(x.material)}"></div>
+  <div class="field"><label>Ketebalan</label><input data-k="thickness" value="${esc(x.thickness)}"></div>
+  <div class="field"><label>Finishing</label><input data-k="finishing" value="${esc(x.finishing)}"></div>
+  <div class="field"><label>Konstruksi</label><input data-k="construction" value="${esc(x.construction)}"></div>
+  <div class="field"><label>Aksesoris / Bracket</label><input data-k="accessory" value="${esc(x.accessory)}"></div>
+  <div class="field"><label>Spesifikasi / Instruksi</label><input data-k="spec" value="${esc(x.spec)}"></div>
+ </div>
+ <div class="muted" style="margin-top:8px">Gambar kerja: ${(x.files||[]).map(f=>esc(f.name)).join(', ')||'belum ada'} <button class="btn secondary" onclick="uploadWorkImage(${i})">Upload</button></div>
+ </div>`}
+function addEditItem(){const wrap=document.getElementById('editItems');const i=wrap.querySelectorAll('.item').length;wrap.insertAdjacentHTML('beforeend',itemEditor(newItem(),i))}
+function saveEditor(id,editing){
+ const old=db.jos.find(x=>x.id===id)||{id,createdAt:new Date().toISOString()};
+ old.invoiceNo=document.getElementById('e_inv').value.trim();old.customer=document.getElementById('e_cus').value.trim();old.invoiceDate=document.getElementById('e_date').value;
+ old.productionDate=document.getElementById('e_in').value;old.targetDate=document.getElementById('e_target').value;old.pic=document.getElementById('e_pic').value;old.generalNote=document.getElementById('e_note').value;
+ old.items=[...document.querySelectorAll('#editItems .item')].map((el,idx)=>{const o=old.items?.[idx]||newItem();el.querySelectorAll('[data-k]').forEach(n=>o[n.dataset.k]=n.value);return o});
+ old.updatedAt=new Date().toISOString();
+ if(!editing)db.jos.unshift(old);
+ save();closeModal();render();
+}
+function openJO(id){
+ const j=db.jos.find(x=>x.id===id);if(!j)return;
+ show(`<div class="modalhead"><div><h2 style="margin:0">${esc(j.joNo)}</h2><div class="muted">${esc(j.customer)} • PIC ${esc(j.pic)}</div></div><button class="btn secondary" onclick="closeModal()">✕</button></div>
+ <div class="grid3"><div><b>Invoice</b><br>${esc(j.invoiceNo||'-')}</div><div><b>Target</b><br>${esc(fmt(j.targetDate))}</div><div><b>Progress</b><br>${pct(j)}%</div></div>
+ <div class="section-title">Progress Pekerjaan</div>
+ ${j.items.map((x,i)=>progressItem(j,i,x)).join('')}
+ <div style="margin-top:12px;display:flex;gap:8px"><button class="btn blue" onclick="printJO('${j.id}')">🖨️ Print / Save PDF</button><button class="btn secondary" onclick="editor(db.jos.find(x=>x.id==='${j.id}'),true)">Edit JO</button></div>`);
+}
+function progressItem(j,i,x){
+ return `<div class="item"><b>${i+1}. ${esc(x.name||'Item')}</b> — ${esc(x.qty)} ${esc(x.unit)}
+ ${STAGES.map((s,k)=>{const z=(x.progress||[]).find(p=>p.stage===s)||{stage:s,done:false,note:'',photos:[]};return `<div class="stage ${z.done?'done':(k===0||((x.progress||[])[k-1]?.done)?'current':'')}">
+ <div><b>${esc(s)}</b><br><small>${esc(z.note||'Belum atualizado')} ${z.updatedAt?'• '+new Date(z.updatedAt).toLocaleString('pt-BR'):''}</small>
+ ${(z.photos||[]).length?`<div class="photos">${z.photos.map(p=>`<img src="${p.data}" alt="">`).join('')}</div>`:''}</div>
+ <div><button class="btn ${z.done?'secondary':'ok'}" onclick="updateStage('${j.id}','${x.id}','${s.replace(/'/g,"\\'")}')">${z.done?'✓ Concluído':'Atualizar'}</button></div>
+ </div>`}).join('')}</div>`
+}
+function updateStage(jid,itemid,stage){
+ const j=db.jos.find(x=>x.id===jid),x=j.items.find(x=>x.id===itemid),z=x.progress.find(p=>p.stage===stage);
+ const note=prompt('Catatan progress (opsional):',z.note||'');if(note===null)return;
+ const input=document.createElement('input');input.type='file';input.accept='image/*';input.multiple=true;
+ input.onchange=async()=>{const photos=[];for(const f of input.files){photos.push({name:f.name,data:await fileDataURL(f),createdAt:new Date().toISOString()})}
+ z.done=true;z.note=note;z.updatedAt=new Date().toISOString();z.photos=(z.photos||[]).concat(photos);j.updatedAt=new Date().toISOString();save();openJO(jid);render()};
+ input.click();
+}
+async function uploadWorkImage(itemIndex){
+ const input=document.createElement('input');input.type='file';input.accept='image/*,.pdf';input.multiple=true;
+ input.onchange=async()=>{const j=db.jos.find(x=>x.id===getEditingId());if(!j)return;const el=[...document.querySelectorAll('#editItems .item')][itemIndex];const x=j.items[itemIndex]||newItem();x.files=x.files||[];
+ for(const f of input.files){x.files.push({name:f.name,type:f.type,data:await fileDataURL(f)})}
+ j.items[itemIndex]=x;editor(j,true)};input.click();
+}
+function getEditingId(){const h=document.querySelector('#modalBox h2');return db.jos.find(x=>h?.textContent.includes(x.joNo))?.id}
+function openImport(){show(`<div class="modalhead"><h2>Upload Invoice</h2><button class="btn secondary" onclick="closeModal()">✕</button></div>
+ <p class="muted">Untuk versi online, parser invoice akan membaca PDF/scan dan mengisi No. Invoice, Customer, Tanggal, Detail, Qty & Satuan. Nominal tidak masuk JO.</p>
+ <input id="invoiceFile" type="file" accept=".pdf,image/*" onchange="invoiceDemo(event)">
+ <div id="invoiceResult" style="margin-top:12px"></div>`)}
+async function invoiceDemo(e){
+ const f=e.target.files[0];if(!f)return;
+ document.getElementById('invoiceResult').innerHTML='<div class="card">File diterima: '+esc(f.name)+'<br><small>Parser OCR siap dihubungkan ke endpoint /api/drive. Untuk keamanan, nominal tidak disimpan.</small><br><br><button class="btn" onclick="newJO()">Buat JO dari Invoice</button></div>';
+}
+function exportJSON(){const blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='mulia-jo-backup-'+new Date().toISOString().slice(0,10)+'.json';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+function importJSON(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{try{const x=JSON.parse(r.result);if(!x.jos)throw Error('Format JSON tidak sesuai');db=x;save();render();alert('Backup JSON berhasil dimuat.')}catch(err){alert('JSON tidak valid: '+err.message)}};r.readAsText(f)}
+async function syncDrive(){
+ try{
+  const r=await fetch('/api/drive?action=load');const d=await r.json();
+  if(!r.ok)throw Error(d.error||'Drive belum dikonfigurasi');
+  if(d.data?.jos){db=d.data;save();render();alert('Data berhasil disinkronkan dari Google Drive.')}
+  else alert('Drive terhubung, tetapi belum ada database JO.');
+ }catch(e){alert('Drive belum tersambung. Aplikasi tetap berjalan dalam mode lokal.\\n\\n'+e.message)}
+}
+function printJO(id){
+ const j=db.jos.find(x=>x.id===id);if(!j)return;
+ const w=window.open('','_blank','width=900,height=800');if(!w){alert('Izinkan pop-up browser.');return}
+ const items=j.items||[];
+ let h=`<!doctype html><html><head><meta charset="utf-8"><title>${esc(j.joNo)}</title><style>@page{size:A4;margin:7mm}body{font:9px Arial;color:#111}.head{border-bottom:2px solid #111;padding-bottom:5px}.top{display:flex;justify-content:space-between}.meta{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-top:6px}.items{display:grid;grid-template-columns:${items.length>1?'1fr 1fr':'1fr'};gap:5px;margin-top:6px}.item{border:1px solid #888;padding:5px;break-inside:avoid}.grid{display:grid;grid-template-columns:1fr 1fr;gap:2px 8px}.gallery{display:flex;gap:4px;flex-wrap:wrap}.gallery img{width:32mm;height:23mm;object-fit:contain;border:1px solid #aaa}.sign{display:flex;gap:50mm;text-align:center;margin-top:15px}</style></head><body>
+ <div class="head"><div class="top"><h1>JOB ORDER PRODUKSI</h1><b>${esc(j.joNo)}</b></div><div class="meta"><div><b>Invoice:</b> ${esc(j.invoiceNo)}</div><div><b>Customer:</b> ${esc(j.customer)}</div><div><b>Tanggal:</b> ${esc(fmt(j.invoiceDate))}</div><div><b>Masuk:</b> ${esc(fmt(j.productionDate))}</div><div><b>Target:</b> ${esc(fmt(j.targetDate))}</div><div><b>PIC:</b> ${esc(j.pic)}</div></div></div><h3>DETAIL PRODUKSI</h3><div class="items">`;
+ items.forEach((x,i)=>{h+=`<div class="item"><b>${i+1}. ${esc(x.name)}</b> — ${esc(x.qty)} ${esc(x.unit)}<div class="grid"><div><b>Ukuran:</b> ${esc(x.size||'-')}</div><div><b>Bahan:</b> ${esc(x.material||'-')}</div><div><b>Tebal:</b> ${esc(x.thickness||'-')}</div><div><b>Finishing:</b> ${esc(x.finishing||'-')}</div><div><b>Konstruksi:</b> ${esc(x.construction||'-')}</div><div><b>Aksesoris:</b> ${esc(x.accessory||'-')}</div></div>${x.spec?`<p><b>Instruksi:</b> ${esc(x.spec)}</p>`:''}<div class="gallery">${(x.files||[]).filter(f=>f.type?.startsWith('image/')).map(f=>`<img src="${f.data}">`).join('')}</div></div>`});
+ h+=`</div>${j.generalNote?`<p><b>Catatan:</b> ${esc(j.generalNote)}</p>`:''}<div class="sign"><div>Mengetahui<br><br>________________</div><div>Produksi<br><br>________________</div></div></body></html>`;
+ w.document.write(h);w.document.close();w.onload=()=>setTimeout(()=>w.print(),500);
+}
+load();render();
+</script>
+</body></html>

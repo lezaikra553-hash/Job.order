@@ -1,0 +1,27 @@
+LANGKAH DEPLOY
+
+A. GITHUB
+1. Buat repository baru: mulia-jo-produksi
+2. Upload SEMUA isi folder ini.
+3. Pastikan TIDAK ada file credential Google / service account JSON.
+
+B. VERCEL
+1. Add New Project
+2. Import repository GitHub
+3. Deploy.
+4. Settings > Environment Variables:
+   GOOGLE_DRIVE_FOLDER_ID = ID folder root Google Drive
+   GOOGLE_SERVICE_ACCOUNT_JSON = isi JSON service account lengkap
+5. Redeploy.
+
+C. GOOGLE DRIVE
+1. Buat/siapkan folder root MULIA GROUP.
+2. Share folder tersebut ke email Google Service Account sebagai Editor.
+3. Salin Folder ID dari URL Google Drive.
+4. Masukkan ke GOOGLE_DRIVE_FOLDER_ID.
+
+D. TES
+Buka:
+https://DOMAIN-VERCEL-ANDA/api/drive?action=health
+
+Jika berhasil, API mengembalikan JSON status OK.
