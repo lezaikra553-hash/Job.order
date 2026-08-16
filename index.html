@@ -25,7 +25,7 @@ main{max-width:1250px;margin:auto;padding:20px}.toolbar{display:flex;gap:8px;fle
 <body>
 <header>
   <div class="brand">MULIA GROUP — JOB ORDER PRODUKSI<small>Production Tracking • V9</small></div>
-  <div id="userBadge">PIC: -</div>
+  <div><span id="userBadge">PIC: -</span> <button class="btn secondary" style="padding:6px 9px;margin-left:6px" onclick="changeCurrentPIC()">Ganti PIC</button></div>
 </header>
 <main>
   <div class="toolbar">
@@ -58,14 +58,24 @@ main{max-width:1250px;margin:auto;padding:20px}.toolbar{display:flex;gap:8px;fle
 <script>
 const STAGES=['Film','Cutting / CNC / Laser','Bending','Welding / Assembly','Painting','Finishing','Packing','Pemasangan'];
 const KEY='mulia_jo_v9_demo';
-let db={version:9,users:[{name:'Andre',role:'PIC Produksi'},{name:'Indra',role:'PIC Produksi'}],jos:[]};
+let db={version:9,jos:[]};
 let currentUser=localStorage.getItem('mulia_pic')||'Andre';
 
 function esc(v){return String(v??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
 function fmt(s){if(!s)return '-';const d=new Date(s+'T00:00:00');return isNaN(d)?s:d.toLocaleDateString('id-ID',{day:'2-digit',month:'2-digit',year:'numeric'})}
 function uid(p='id'){return p+'_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2,7)}
 function save(){localStorage.setItem(KEY,JSON.stringify(db))}
-function load(){try{const x=JSON.parse(localStorage.getItem(KEY)||'null');if(x?.jos)db=x}catch(e){};document.getElementById('userBadge').textContent='PIC: '+currentUser;save()}
+function load(){try{const x=JSON.parse(localStorage.getItem(KEY)||'null');if(x?.jos)db=x}catch(e){};db.jos=db.jos||[];document.getElementById('userBadge').textContent='PIC: '+currentUser;save()}
+function changeCurrentPIC(){
+ const name=prompt('Nama PIC Produksi untuk tampilan dashboard:',currentUser||'');
+ if(name===null)return;
+ const clean=name.trim();
+ if(!clean)return;
+ currentUser=clean;
+ localStorage.setItem('mulia_pic',currentUser);
+ document.getElementById('userBadge').textContent='PIC: '+currentUser;
+ render();
+}
 function myJO(j){return j.pic===currentUser}
 function pct(j){const a=j.items||[];if(!a.length)return 0;let n=0,t=a.length*STAGES.length;a.forEach(x=>{const p=x.progress||[];n+=STAGES.filter(s=>p.find(z=>z.stage===s&&z.done)).length});return Math.round(n/t*100)}
 function state(j){const p=pct(j);return p>=100?'done':p>0?'progress':'open'}
@@ -84,7 +94,10 @@ function render(){
  document.getElementById('cOpen').textContent=db.jos.filter(j=>state(j)==='open').length;
  document.getElementById('cProgress').textContent=db.jos.filter(j=>state(j)==='progress').length;
  document.getElementById('cDone').textContent=db.jos.filter(j=>state(j)==='done').length;
- const sel=document.getElementById('picFilter'),old=sel.value;sel.innerHTML='<option value="">Semua PIC</option>'+db.users.map(u=>`<option>${esc(u.name)}</option>`).join('');sel.value=old;
+ const sel=document.getElementById('picFilter'),old=sel.value;
+ const pics=[...new Set(db.jos.map(j=>(j.pic||'').trim()).filter(Boolean))].sort((a,b)=>a.localeCompare(b,'id'));
+ sel.innerHTML='<option value="">Semua PIC</option>'+pics.map(n=>`<option>${esc(n)}</option>`).join('');
+ if(pics.includes(old)) sel.value=old;
 }
 function show(content){document.getElementById('modalBox').innerHTML=content;document.getElementById('modal').classList.add('show')}
 function closeModal(){document.getElementById('modal').classList.remove('show')}
@@ -101,8 +114,9 @@ function editor(j,editing){
   <div class="field"><label>Tanggal Invoice</label><input id="e_date" type="date" value="${esc(j.invoiceDate)}"></div>
   <div class="field"><label>Tanggal Masuk Produksi</label><input id="e_in" type="date" value="${esc(j.productionDate)}"></div>
   <div class="field"><label>Target Selesai</label><input id="e_target" type="date" value="${esc(j.targetDate)}"></div>
-  <div class="field"><label>PIC Produksi</label><select id="e_pic">${db.users.map(u=>`<option ${u.name===j.pic?'selected':''}>${esc(u.name)}</option>`).join('')}</select></div>
+  <div class="field"><label>PIC Produksi</label><input id="e_pic" value="${esc(j.pic||'')}" placeholder="Ketik nama PIC Produksi"></div>
  </div>
+ <div class="card" style="margin:12px 0;padding:10px"><b>PIC Produksi diisi manual</b><br><span class="muted">Nama PIC tidak dibatasi daftar tetap. Dashboard akan otomatis membuat filter berdasarkan nama PIC yang sudah digunakan pada JO.</span></div>
  <div class="section-title">Detail Produksi</div><div id="editItems">${j.items.map((x,i)=>itemEditor(x,i)).join('')}</div>
  <button class="btn secondary" onclick="addEditItem()">＋ Tambah Item</button>
  <div class="field" style="margin-top:10px"><label>Catatan Umum Produksi</label><textarea id="e_note">${esc(j.generalNote)}</textarea></div>
@@ -128,7 +142,10 @@ function addEditItem(){const wrap=document.getElementById('editItems');const i=w
 function saveEditor(id,editing){
  const old=db.jos.find(x=>x.id===id)||{id,createdAt:new Date().toISOString()};
  old.invoiceNo=document.getElementById('e_inv').value.trim();old.customer=document.getElementById('e_cus').value.trim();old.invoiceDate=document.getElementById('e_date').value;
- old.productionDate=document.getElementById('e_in').value;old.targetDate=document.getElementById('e_target').value;old.pic=document.getElementById('e_pic').value;old.generalNote=document.getElementById('e_note').value;
+ old.productionDate=document.getElementById('e_in').value;old.targetDate=document.getElementById('e_target').value;
+ old.pic=document.getElementById('e_pic').value.trim();
+ if(!old.pic){alert('Nama PIC Produksi wajib diisi.');return;}
+ old.generalNote=document.getElementById('e_note').value;
  old.items=[...document.querySelectorAll('#editItems .item')].map((el,idx)=>{const o=old.items?.[idx]||newItem();el.querySelectorAll('[data-k]').forEach(n=>o[n.dataset.k]=n.value);return o});
  old.updatedAt=new Date().toISOString();
  if(!editing)db.jos.unshift(old);

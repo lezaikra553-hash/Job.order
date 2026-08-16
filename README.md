@@ -23,3 +23,8 @@ Setelah aplikasi berhasil online, metode koneksi Google Drive akan disamakan den
 - Foto progress
 - Print / Save as PDF
 - Backup/import JSON
+
+
+## PIC Produksi
+Nama PIC diisi manual pada setiap JO. Tidak ada daftar tetap seperti Indra/Andre.
+Filter PIC di dashboard dibuat otomatis dari nama PIC yang sudah digunakan.
